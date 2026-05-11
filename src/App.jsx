@@ -526,7 +526,7 @@ export default function App() {
           {/* IAP Logo */}
           <div style={{ marginBottom: '24px' }}>
             <img 
-              src="/img/iap-logo.png"
+              src="./img/iap-logo.png"
               alt="IAP – Lehrstuhl für die Ausbildung personaler und interpersonaler Kompetenzen im Gesundheitswesen, Universität Witten/Herdecke"
               style={{ 
                 width: '100%', maxWidth: '220px',
