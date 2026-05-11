@@ -418,7 +418,7 @@ export default function App() {
   if (view === 'home') {
     return (
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px', position: 'relative' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px', position: 'relative' }}>
           
           {/* Update-Banner */}
           {updateAvailable && (
@@ -490,17 +490,7 @@ export default function App() {
 
           {/* Manueller Installationshinweis: immer sichtbar wenn nicht installiert und kein Auto-Prompt */}
           {!installPrompt && !installed && (
-            <div style={{
-              background: C.blueLight, borderLeft: `4px solid ${C.blue}`,
-              borderRadius: '2px', padding: '12px 14px', marginBottom: '16px',
-              display: 'flex', gap: '10px', alignItems: 'flex-start'
-            }}>
-              <Info size={16} color={C.blue} style={{ flexShrink: 0, marginTop: '2px' }} />
-              <div style={{ fontSize: '12.5px', color: C.text, lineHeight: '1.55' }}>
-                <strong style={{ color: C.blue }}>Als App installieren:</strong> Tippe in Chrome auf das Menü (⋮) und wähle „App installieren" oder „Zum Startbildschirm hinzufügen".
-              </div>
-            </div>
-          )}
+
 
           {/* Bestätigung nach Installation */}
           {installed && (
@@ -727,7 +717,7 @@ export default function App() {
               marginBottom: '16px', fontFamily: sans, fontWeight: '600'
             }}
           >
-            <ChevronLeft size={16} /> Übersicht
+       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px' }}>
           </button>
 
           <div style={{ marginBottom: '24px' }}>
@@ -821,7 +811,7 @@ export default function App() {
               marginBottom: '16px', fontFamily: sans, fontWeight: '600'
             }}
           >
-            <ChevronLeft size={16} /> {sec.title}
+          <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px' }}>
           </button>
 
           <div style={{ 
@@ -874,7 +864,7 @@ export default function App() {
             <ChevronLeft size={16} /> Zurück
           </button>
           <div style={{ marginBottom: '24px', paddingBottom: '16px', borderBottom: `1px solid ${C.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 80px' }}>
               <div style={{ width: '4px', height: '20px', background: C.teal, borderRadius: '1px' }} />
               <h1 style={{ fontSize: '22px', fontWeight: '700', color: C.blue, margin: 0 }}>Impressum</h1>
             </div>
