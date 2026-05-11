@@ -597,7 +597,16 @@ export default function App() {
             />
           </div>
 
-          <SectionLabel text="MODULE" />
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            margin: '24px 0 12px 0', fontFamily: sans
+          }}>
+            <div style={{ width: '3px', height: '16px', background: C.teal, borderRadius: '2px' }} />
+            <span style={{
+              fontSize: '12px', fontWeight: 600, letterSpacing: '0.08em',
+              color: C.blue, textTransform: 'uppercase'
+            }}>MODULE</span>
+          </div>
 
           <div style={{ display: 'grid', gap: '8px' }}>
             {Object.entries(sections).filter(([k]) => k !== 'calgary').map(([key, sec]) => {
