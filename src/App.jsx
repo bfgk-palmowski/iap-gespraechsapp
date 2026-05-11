@@ -390,7 +390,7 @@ export default function App() {
       subtitle: '9-stufiges Schema · 7 Dimensionen',
       icon: Activity,
       description: 'Von der Landkarte der Beschwerden bis zum gemeinsamen Planen.',
-      illustration: '/testapp/img/sanduhr.png'
+      illustration: './img/sanduhr.png'
     },
     feedback: {
       title: 'Teamkompetenz & Feedback',
@@ -404,7 +404,7 @@ export default function App() {
       subtitle: 'WWSZ · Sanduhrmodell · Fragetechniken · Nonverbal',
       icon: MessageCircle,
       description: 'Der Werkzeugkasten für strukturierte Gespräche.',
-      illustration: '/testapp/img/arzt.png'
+      illustration: './img/arzt.png'
     },
     emotionen: {
       title: 'Umgang mit Emotionen',
@@ -562,7 +562,7 @@ export default function App() {
               </div>
             </div>
             <img 
-              src="/testapp/img/gespraech.png" 
+              src="/img/gespraech.png" 
               alt="" 
               style={{ 
                 height: '110px', width: 'auto', flexShrink: 0,
