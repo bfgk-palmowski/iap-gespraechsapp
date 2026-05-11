@@ -562,7 +562,7 @@ export default function App() {
               </div>
             </div>
             <img 
-              src="/img/gespraech.png" 
+              src="./img/gespraech.png" 
               alt="" 
               style={{ 
                 height: '110px', width: 'auto', flexShrink: 0,
