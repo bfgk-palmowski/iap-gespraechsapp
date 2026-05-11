@@ -310,12 +310,10 @@ export default function App() {
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
     navigator.serviceWorker.ready.then((registration) => {
-      // Prüfen ob schon ein waiting worker da ist
       if (registration.waiting) {
         setWaitingWorker(registration.waiting);
         setUpdateAvailable(true);
       }
-      // Auf neue Updates lauschen
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
         if (!newWorker) return;
@@ -327,7 +325,6 @@ export default function App() {
         });
       });
     });
-    // Wenn neuer SW übernimmt: Seite neu laden
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       window.location.reload();
     });
@@ -393,7 +390,7 @@ export default function App() {
       subtitle: '9-stufiges Schema · 7 Dimensionen',
       icon: Activity,
       description: 'Von der Landkarte der Beschwerden bis zum gemeinsamen Planen.',
-      illustration: './img/sanduhr.png'
+      illustration: '/testapp/img/sanduhr.png'
     },
     feedback: {
       title: 'Teamkompetenz & Feedback',
@@ -407,7 +404,7 @@ export default function App() {
       subtitle: 'WWSZ · Sanduhrmodell · Fragetechniken · Nonverbal',
       icon: MessageCircle,
       description: 'Der Werkzeugkasten für strukturierte Gespräche.',
-      illustration: './img/arzt.png'
+      illustration: '/testapp/img/arzt.png'
     },
     emotionen: {
       title: 'Umgang mit Emotionen',
@@ -423,30 +420,20 @@ export default function App() {
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px', position: 'relative' }}>
           
-          {/* Update-Banner — erscheint automatisch wenn neue Version verfügbar */}
+          {/* Update-Banner */}
           {updateAvailable && (
             <button
-              onClick={() => {
-                if (waitingWorker) {
-                  waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-                }
-              }}
+              onClick={() => { if (waitingWorker) { waitingWorker.postMessage({ type: 'SKIP_WAITING' }); } }}
               style={{
                 display: 'flex', alignItems: 'center', gap: '12px',
-                width: '100%', background: C.teal,
-                border: 'none', borderRadius: '4px',
+                width: '100%', background: C.teal, border: 'none', borderRadius: '4px',
                 padding: '12px 16px', marginBottom: '12px',
-                cursor: 'pointer', textAlign: 'left',
-                fontFamily: sans, color: 'white',
+                cursor: 'pointer', textAlign: 'left', fontFamily: sans, color: 'white',
               }}
             >
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: 'rgba(255,255,255,0.8)', fontWeight: '600', marginBottom: '2px' }}>
-                  UPDATE VERFÜGBAR
-                </div>
-                <div style={{ fontSize: '14px', fontWeight: '700' }}>
-                  Neue Version laden
-                </div>
+                <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: 'rgba(255,255,255,0.8)', fontWeight: '600', marginBottom: '2px' }}>UPDATE VERFÜGBAR</div>
+                <div style={{ fontSize: '14px', fontWeight: '700' }}>Neue Version laden</div>
               </div>
               <ChevronRight size={18} color="white" style={{ flexShrink: 0 }} />
             </button>
@@ -471,45 +458,48 @@ export default function App() {
           </div>
 
           {/* PWA Install-Button — erscheint nur wenn Chrome Installation anbietet */}
+          {/* Install-Button: erscheint wenn Chrome beforeinstallprompt auslöst */}
           {installPrompt && !installed && (
             <button
               onClick={async () => {
                 installPrompt.prompt();
                 const { outcome } = await installPrompt.userChoice;
-                if (outcome === 'accepted') {
-                  setInstalled(true);
-                  setInstallPrompt(null);
-                }
+                if (outcome === 'accepted') { setInstalled(true); setInstallPrompt(null); }
               }}
               style={{
                 display: 'flex', alignItems: 'center', gap: '12px',
-                width: '100%', background: C.blue,
-                border: 'none', borderRadius: '4px',
-                padding: '14px 16px', marginBottom: '16px',
-                cursor: 'pointer', textAlign: 'left',
-                fontFamily: sans, color: 'white',
+                width: '100%', background: C.blue, border: 'none', borderRadius: '4px',
+                padding: '14px 16px', marginBottom: '16px', cursor: 'pointer',
+                textAlign: 'left', fontFamily: sans, color: 'white',
                 position: 'relative', overflow: 'hidden'
               }}
             >
-              {/* Türkis-Keil */}
               <svg width="60" height="50" viewBox="0 0 60 50"
                 style={{ position: 'absolute', bottom: 0, left: 0, pointerEvents: 'none' }}
                 preserveAspectRatio="none">
                 <polygon points="0,50 60,50 0,0" fill={C.teal} opacity="0.6" />
               </svg>
               <div style={{ position: 'relative', flex: 1 }}>
-                <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: 'rgba(255,255,255,0.75)', fontWeight: '600', marginBottom: '2px' }}>
-                  AUF HOMESCREEN INSTALLIEREN
-                </div>
-                <div style={{ fontSize: '15px', fontWeight: '700' }}>
-                  App installieren
-                </div>
-                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>
-                  Offline verfügbar · kein App Store nötig
-                </div>
+                <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: 'rgba(255,255,255,0.75)', fontWeight: '600', marginBottom: '2px' }}>AUF HOMESCREEN INSTALLIEREN</div>
+                <div style={{ fontSize: '15px', fontWeight: '700' }}>App installieren</div>
+                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>Offline verfügbar · kein App Store nötig</div>
               </div>
               <ChevronRight size={20} color="rgba(255,255,255,0.8)" style={{ position: 'relative', flexShrink: 0 }} />
             </button>
+          )}
+
+          {/* Manueller Installationshinweis: immer sichtbar wenn nicht installiert und kein Auto-Prompt */}
+          {!installPrompt && !installed && (
+            <div style={{
+              background: C.blueLight, borderLeft: `4px solid ${C.blue}`,
+              borderRadius: '2px', padding: '12px 14px', marginBottom: '16px',
+              display: 'flex', gap: '10px', alignItems: 'flex-start'
+            }}>
+              <Info size={16} color={C.blue} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ fontSize: '12.5px', color: C.text, lineHeight: '1.55' }}>
+                <strong style={{ color: C.blue }}>Als App installieren:</strong> Tippe in Chrome auf das Menü (⋮) und wähle „App installieren" oder „Zum Startbildschirm hinzufügen".
+              </div>
+            </div>
           )}
 
           {/* Bestätigung nach Installation */}
@@ -526,7 +516,7 @@ export default function App() {
           {/* IAP Logo */}
           <div style={{ marginBottom: '24px' }}>
             <img 
-              src="./img/iap-logo.png"
+              src="/testapp/img/iap-logo.png"
               alt="IAP – Lehrstuhl für die Ausbildung personaler und interpersonaler Kompetenzen im Gesundheitswesen, Universität Witten/Herdecke"
               style={{ 
                 width: '100%', maxWidth: '220px',
@@ -572,7 +562,7 @@ export default function App() {
               </div>
             </div>
             <img 
-              src="./img/gespraech.png" 
+              src="/testapp/img/gespraech.png" 
               alt="" 
               style={{ 
                 height: '110px', width: 'auto', flexShrink: 0,
@@ -597,16 +587,7 @@ export default function App() {
             />
           </div>
 
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '10px',
-            margin: '24px 0 12px 0', fontFamily: sans
-          }}>
-            <div style={{ width: '3px', height: '16px', background: C.teal, borderRadius: '2px' }} />
-            <span style={{
-              fontSize: '12px', fontWeight: 600, letterSpacing: '0.08em',
-              color: C.blue, textTransform: 'uppercase'
-            }}>MODULE</span>
-          </div>
+          <SectionLabel text="MODULE" />
 
           <div style={{ display: 'grid', gap: '8px' }}>
             {Object.entries(sections).filter(([k]) => k !== 'calgary').map(([key, sec]) => {
@@ -714,7 +695,7 @@ export default function App() {
             fontSize: '10px', color: C.gray, textAlign: 'center', lineHeight: '1.5'
           }}>
             IAP · Lehrstuhl für Ausbildung personaler und interpersonaler Kompetenzen<br/>
-            Universität Witten/Herdecke · Test-Version v0.14.4<br/>
+            Universität Witten/Herdecke · v0.15.0<br/>
             <button
               onClick={() => setView('impressum')}
               style={{
@@ -723,9 +704,7 @@ export default function App() {
                 textDecoration: 'underline', padding: '4px 0',
                 fontFamily: sans, marginTop: '4px'
               }}
-            >
-              Impressum
-            </button>
+            >Impressum</button>
           </div>
         </div>
       </div>
@@ -796,9 +775,9 @@ export default function App() {
 
           {section === 'calgary' && <CalgaryContent onNav={(t) => navigate('subsection', 'calgary', t)} />}
           {section === 'anamnese' && <AnamneseContent onNav={(t) => navigate('subsection', 'anamnese', t)} />}
+          {section === 'feedback' && <FeedbackContent onNav={(t) => navigate('subsection', 'feedback', t)} />}
           {section === 'kommunikation' && <KommunikationContent onNav={(t) => navigate('subsection', 'kommunikation', t)} />}
           {section === 'emotionen' && <EmotionenContent onNav={(t) => navigate('subsection', 'emotionen', t)} />}
-          {section === 'feedback' && <FeedbackContent onNav={(t) => navigate('subsection', 'feedback', t)} />}
         </div>
       </div>
     );
@@ -818,8 +797,7 @@ export default function App() {
         />
       );
     }
-
-    // Feedback-Methoden: echte Inhalte
+    
     if (section === 'feedback' && feedbackData[subsection]) {
       return (
         <FeedbackDetailView
@@ -829,7 +807,7 @@ export default function App() {
         />
       );
     }
-    
+
     // Andere Module: Platzhalter (wird später inhaltlich ergänzt)
     return (
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
@@ -887,77 +865,43 @@ export default function App() {
     return (
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 80px' }}>
-          <button
-            onClick={() => setView('home')}
-            style={{
-              background: 'transparent', border: 'none', color: C.blue,
-              fontSize: '13px', cursor: 'pointer', padding: '8px 0',
-              display: 'flex', alignItems: 'center', gap: '6px',
-              marginBottom: '24px', fontFamily: sans, fontWeight: '600'
-            }}
-          >
+          <button onClick={() => setView('home')} style={{
+            background: 'transparent', border: 'none', color: C.blue,
+            fontSize: '13px', cursor: 'pointer', padding: '8px 0',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            marginBottom: '24px', fontFamily: sans, fontWeight: '600'
+          }}>
             <ChevronLeft size={16} /> Zurück
           </button>
-
           <div style={{ marginBottom: '24px', paddingBottom: '16px', borderBottom: `1px solid ${C.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: '4px', height: '20px', background: C.teal, borderRadius: '1px' }} />
               <h1 style={{ fontSize: '22px', fontWeight: '700', color: C.blue, margin: 0 }}>Impressum</h1>
             </div>
           </div>
-
-          {/* App-spezifische Angaben */}
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>
-              VERANTWORTLICH FÜR DIESE APP
-            </div>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>VERANTWORTLICH FÜR DIESE APP</div>
             <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.7' }}>
               Stefan Palmowski<br/>
               für den Lehrstuhl für die Ausbildung personaler und interpersonaler Kompetenzen im Gesundheitswesen (IAP)<br/>
               Universität Witten/Herdecke
             </div>
           </div>
-
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>
-              HINWEIS
-            </div>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>HINWEIS</div>
             <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.6' }}>
               Diese App befindet sich in der Entwicklungsphase. Inhalte können Fehler enthalten. Sie ersetzt keine klinische Entscheidung und dient ausschließlich Ausbildungszwecken.
             </div>
           </div>
-
-          {/* Link auf vollständiges Impressum */}
-          <div style={{
-            background: C.blueLight, borderLeft: `4px solid ${C.blue}`,
-            borderRadius: '2px', padding: '14px 16px', marginTop: '8px'
-          }}>
-            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>
-              VOLLSTÄNDIGES IMPRESSUM
-            </div>
+          <div style={{ background: C.blueLight, borderLeft: `4px solid ${C.blue}`, borderRadius: '2px', padding: '14px 16px' }}>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>VOLLSTÄNDIGES IMPRESSUM</div>
             <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.6', marginBottom: '10px' }}>
-              Alle weiteren Angaben (Kontakt, Umsatzsteuer, Berufliche Angaben, Streitschlichtung, Urheberrecht) findest du auf der vollständigen Impressum-Seite:
+              Alle weiteren Angaben findest du auf der vollständigen Impressum-Seite:
             </div>
-            <a
-              href="https://patientenperspektive.de/impressum.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-                color: C.blue, fontSize: '13px', fontWeight: '600',
-                textDecoration: 'underline'
-              }}
-            >
+            <a href="https://patientenperspektive.de/impressum.html" target="_blank" rel="noopener noreferrer"
+              style={{ color: C.blue, fontSize: '13px', fontWeight: '600', textDecoration: 'underline' }}>
               patientenperspektive.de/impressum.html
             </a>
-          </div>
-
-          <div style={{
-            marginTop: '40px', paddingTop: '16px',
-            borderTop: `1px solid ${C.border}`,
-            fontSize: '10px', color: C.gray, textAlign: 'center'
-          }}>
-            IAP · Universität Witten/Herdecke · Test-Version v0.14.5
           </div>
         </div>
       </div>
@@ -965,4 +909,1243 @@ export default function App() {
   }
 
   return null;
+}
+
+function SectionLabel({ text }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+      <div style={{ width: '4px', height: '14px', background: C.teal, borderRadius: '1px' }} />
+      <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700' }}>{text}</div>
+    </div>
+  );
+}
+
+function CalgaryContent({ onNav }) {
+  // Die 4 Phasen (zentrale Spalte, werden durchflossen)
+  const phases = [
+    { 
+      id: 'Gesprächsbeginn', 
+      num: 1,
+      items: [
+        'Begrüßung, Vorstellung, Funktion & Aufgabe',
+        'Agenda festlegen',
+        'Gesprächssetting: Vertraulichkeit & Privatsphäre sichern',
+      ]
+    },
+    { 
+      id: 'Informationen sammeln', 
+      num: 2,
+      items: [
+        'Anamnese',
+        'Jetziges Leiden · Eigen- / Spezielle Anamnese',
+        'Systemanamnese · Familienanamnese · Sozialanamnese',
+        'Subjektives Krankheitskonzept · Angehörigeninfos',
+        'Informationen anderer Ärzt:innen & Gesundheitsberufe',
+      ]
+    },
+    { 
+      id: 'Infos weitergeben · Planen · Entscheiden', 
+      num: 3,
+      items: [
+        'Aufklärung',
+        'Überbringen schlechter Nachrichten',
+        'Beratung · Gemeinsame Entscheidungsfindung',
+        'Verlaufskontrollen · Informationen an Kolleg:innen',
+      ]
+    },
+    { 
+      id: 'Gesprächsende', 
+      num: 4,
+      items: [
+        'Weiteres Vorgehen & Verabredungen',
+        'Gespräch zum Abschluss bringen',
+      ]
+    },
+  ];
+
+  // Querachsen (begleiten durchgängig)
+  const strukturieren = {
+    title: 'Strukturieren des Gesprächs',
+    items: [
+      { t: 'Zeitrahmen setzen', bold: false },
+      { t: 'Überleiten · Ankündigen', bold: false },
+      { t: 'Einsatz von Fragetechniken', bold: true },
+      { t: 'WWSZ', bold: true },
+      { t: 'Warten · Wiederholen · Spiegeln · Zusammenfassen', bold: false, indent: true },
+      { t: 'Buchmetapher', bold: true },
+      { t: 'Struktur der Anamnese', bold: true },
+    ]
+  };
+
+  const beziehung = {
+    title: 'Beziehungsaufbau',
+    items: [
+      { t: 'Patientenzentrierte Kommunikation', bold: true },
+      { t: 'Agenda & Autonomie des Patienten beachten', bold: false },
+      { t: 'Aktives Zuhören', bold: true },
+      { t: 'Umgang mit Emotionen: NURSE', bold: true },
+      { t: 'Körper · Wortwahl · Stimme gezielt einsetzen', bold: true },
+    ]
+  };
+
+  return (
+    <>
+      {/* Einleitung */}
+      <div style={{
+        background: C.blueLight, borderRadius: '2px',
+        borderLeft: `4px solid ${C.blue}`,
+        padding: '14px 16px', marginBottom: '20px',
+        fontSize: '13px', color: C.text, lineHeight: '1.55'
+      }}>
+        Die <strong style={{ color: C.blue }}>vier Phasen</strong> werden im Gespräch der Reihe nach durchlaufen. Die beiden <strong style={{ color: C.blue }}>Querachsen</strong> begleiten das gesamte Gespräch durchgängig.
+      </div>
+
+      {/* Querachse oben: Strukturieren */}
+      <AxisCard axis={strukturieren} onClick={() => onNav('Strukturieren des Gesprächs')} position="top" />
+
+      {/* Die 4 Phasen im Flow */}
+      <div style={{ marginTop: '16px', position: 'relative' }}>
+        {phases.map((p, i) => (
+          <React.Fragment key={i}>
+            <PhaseBlock phase={p} onClick={() => onNav(p.id)} />
+            {i < phases.length - 1 && <FlowArrow />}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Querachse unten: Beziehungsaufbau */}
+      <div style={{ marginTop: '16px' }}>
+        <AxisCard axis={beziehung} onClick={() => onNav('Beziehungsaufbau')} position="bottom" />
+      </div>
+    </>
+  );
+}
+
+// Kompaktes Phasen-Element (zentrale Spalte)
+function PhaseBlock({ phase, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'block', width: '100%', textAlign: 'left',
+        background: C.card, border: `1px solid ${C.border}`,
+        borderRadius: '4px', padding: '0',
+        cursor: 'pointer', fontFamily: sans,
+        overflow: 'hidden', transition: 'all 0.15s'
+      }}
+      onMouseEnter={(e) => { 
+        e.currentTarget.style.borderColor = C.blue;
+        e.currentTarget.style.transform = 'translateY(-1px)';
+      }}
+      onMouseLeave={(e) => { 
+        e.currentTarget.style.borderColor = C.border;
+        e.currentTarget.style.transform = 'translateY(0)';
+      }}
+    >
+      {/* Kopfbalken */}
+      <div style={{
+        background: C.blue, color: 'white',
+        padding: '10px 14px',
+        display: 'flex', alignItems: 'center', gap: '10px'
+      }}>
+        <div style={{
+          width: '22px', height: '22px',
+          background: C.teal, color: 'white',
+          borderRadius: '50%', display: 'flex',
+          alignItems: 'center', justifyContent: 'center',
+          fontWeight: '700', fontSize: '11px',
+          flexShrink: 0
+        }}>{phase.num}</div>
+        <div style={{ fontSize: '14px', fontWeight: '700', flex: 1, lineHeight: '1.25' }}>
+          {phase.id}
+        </div>
+        <ChevronRight size={16} color="rgba(255,255,255,0.7)" style={{ flexShrink: 0 }} />
+      </div>
+      {/* Inhalt */}
+      <div style={{ padding: '10px 14px 12px' }}>
+        {phase.items.map((item, i) => {
+          const isHeader = i === 0 && (item === 'Anamnese' || item === 'Aufklärung');
+          return (
+            <div key={i} style={{
+              display: 'flex', gap: '8px', alignItems: 'flex-start',
+              padding: '3px 0',
+              fontSize: '12.5px',
+              color: C.text,
+              lineHeight: '1.45',
+              fontWeight: isHeader ? '700' : '400'
+            }}>
+              <div style={{
+                width: '6px', height: '6px', borderRadius: '50%',
+                background: C.teal, flexShrink: 0, marginTop: '7px'
+              }} />
+              <div>{item}</div>
+            </div>
+          );
+        })}
+      </div>
+    </button>
+  );
+}
+
+// Seitlicher Querachsen-Block (oben/unten, mit Pfeil in Richtung Phasen)
+function AxisCard({ axis, onClick, position }) {
+  const isTop = position === 'top';
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'block', width: '100%', textAlign: 'left',
+        background: C.tealLight,
+        border: `1px solid ${C.teal}`,
+        borderRadius: '4px',
+        padding: '14px 16px',
+        cursor: 'pointer', fontFamily: sans,
+        position: 'relative',
+        transition: 'all 0.15s'
+      }}
+      onMouseEnter={(e) => { 
+        e.currentTarget.style.background = '#D4EEF1';
+      }}
+      onMouseLeave={(e) => { 
+        e.currentTarget.style.background = C.tealLight;
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+        <div style={{ width: '4px', height: '18px', background: C.teal, borderRadius: '1px' }} />
+        <div style={{ 
+          fontSize: '15px', fontWeight: '700', color: C.blue,
+          flex: 1, letterSpacing: '-0.2px'
+        }}>
+          {axis.title}
+        </div>
+        <div style={{ 
+          fontSize: '10px', color: C.gray, letterSpacing: '1px',
+          fontWeight: '600'
+        }}>DURCHGÄNGIG</div>
+      </div>
+      <div>
+        {axis.items.map((item, i) => (
+          <div key={i} style={{
+            fontSize: '12.5px',
+            color: C.text,
+            lineHeight: '1.55',
+            fontWeight: item.bold ? '700' : '400',
+            paddingLeft: item.indent ? '12px' : '0',
+            marginBottom: '2px'
+          }}>
+            {item.t}
+          </div>
+        ))}
+      </div>
+      {/* Pfeil-Andeutung Richtung Phasen */}
+      <div style={{
+        position: 'absolute',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        ...(isTop ? { bottom: '-9px' } : { top: '-9px' }),
+        width: '0', height: '0',
+        borderLeft: '9px solid transparent',
+        borderRight: '9px solid transparent',
+        ...(isTop 
+          ? { borderTop: `9px solid ${C.teal}` }
+          : { borderBottom: `9px solid ${C.teal}` }
+        )
+      }} />
+    </button>
+  );
+}
+
+// Pfeil zwischen den Phasen
+function FlowArrow() {
+  return (
+    <div style={{
+      display: 'flex', justifyContent: 'center',
+      padding: '6px 0',
+    }}>
+      <svg width="20" height="14" viewBox="0 0 20 14">
+        <path d="M 10 14 L 2 6 L 7 6 L 7 0 L 13 0 L 13 6 L 18 6 Z" 
+          fill={C.teal} />
+      </svg>
+    </div>
+  );
+}
+
+function AnamneseContent({ onNav }) {
+  const steps = [
+    { n: 1, t: 'Vorstellung, Begrüßung, erster Eindruck' },
+    { n: 2, t: 'Landkarte der Beschwerden' },
+    { n: 3, t: 'Jetziges Leiden · Akutanamnese' },
+    { n: 4, t: 'Eigenanamnese' },
+    { n: 5, t: 'Familienanamnese' },
+    { n: 6, t: 'Sozialanamnese' },
+    { n: 7, t: 'Lebensgeschichtliche Anamnese' },
+    { n: 8, t: 'Systemanamnese' },
+    { n: 9, t: 'Körperliche Untersuchung' },
+    { n: 10, t: 'Planen und Entscheiden' },
+    { n: 11, t: 'Vereinbarung und Verabschiedung' },
+  ];
+
+  return (
+    <>
+      <SectionLabel text="11-STUFEN-SCHEMA" />
+
+      {/* Gruppe 1–8: Informationssammlung, einheitlich blau */}
+      <div style={{ marginBottom: '12px' }}>
+        {steps.filter(s => s.n <= 8).map((s, si) => (
+          <button
+            key={s.n}
+            onClick={() => onNav(String(s.n))}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              width: '100%', background: C.card,
+              border: `1px solid ${C.border}`, borderRadius: '4px',
+              padding: '12px 14px', marginBottom: '6px',
+              cursor: 'pointer', textAlign: 'left', fontFamily: sans,
+              transition: 'all 0.15s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = C.blue;
+              e.currentTarget.style.background = C.blueLight;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = C.border;
+              e.currentTarget.style.background = C.card;
+            }}
+          >
+            <div style={{
+              width: '32px', height: '32px',
+              background: s.n <= 3 ? C.blue : C.teal,
+              color: 'white',
+              borderRadius: '2px', display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontWeight: '700', fontSize: '14px', flexShrink: 0,
+              position: 'relative'
+            }}>
+              {s.n}
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0,
+                width: '10px', height: '2px',
+                background: s.n <= 3 ? C.teal : C.blue
+              }} />
+            </div>
+            <div style={{ flex: 1, fontSize: '14px', fontWeight: '500', color: C.text }}>
+              {s.t}
+            </div>
+            <ChevronRight size={16} color={C.gray} />
+          </button>
+        ))}
+      </div>
+
+      {/* Schritt 9: Trennbalken + einzeln abgesetzt */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        margin: '4px 0 8px'
+      }}>
+        <div style={{ flex: 1, height: '1px', background: C.borderStrong }} />
+        <div style={{
+          fontSize: '10px', letterSpacing: '1px',
+          color: C.gray, fontWeight: '600',
+          textTransform: 'uppercase', whiteSpace: 'nowrap'
+        }}>
+          Körperliche Untersuchung
+        </div>
+        <div style={{ flex: 1, height: '1px', background: C.borderStrong }} />
+      </div>
+      <button
+        onClick={() => onNav('9')}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '12px',
+          width: '100%', background: C.card,
+          border: `1px solid ${C.borderStrong}`, borderRadius: '4px',
+          padding: '12px 14px', marginBottom: '12px',
+          cursor: 'pointer', textAlign: 'left', fontFamily: sans,
+          transition: 'all 0.15s'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = C.gray;
+          e.currentTarget.style.background = C.surface;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = C.borderStrong;
+          e.currentTarget.style.background = C.card;
+        }}
+      >
+        <div style={{
+          width: '32px', height: '32px', background: C.gray, color: 'white',
+          borderRadius: '2px', display: 'flex',
+          alignItems: 'center', justifyContent: 'center',
+          fontWeight: '700', fontSize: '14px', flexShrink: 0,
+          position: 'relative'
+        }}>
+          9
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0,
+            width: '10px', height: '2px', background: C.teal
+          }} />
+        </div>
+        <div style={{ flex: 1, fontSize: '14px', fontWeight: '500', color: C.text }}>
+          Körperliche Untersuchung
+        </div>
+        <ChevronRight size={16} color={C.gray} />
+      </button>
+
+      {/* Gruppe 10–11: Synthese & Abschluss, blaue Nummern wie 1–3 */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        margin: '4px 0 8px'
+      }}>
+        <div style={{ flex: 1, height: '1px', background: C.blue }} />
+        <div style={{
+          fontSize: '10px', letterSpacing: '1px',
+          color: C.blue, fontWeight: '700',
+          textTransform: 'uppercase', whiteSpace: 'nowrap'
+        }}>
+          Synthese · Verdachtsdiagnose · Plan
+        </div>
+        <div style={{ flex: 1, height: '1px', background: C.blue }} />
+      </div>
+      <div>
+        {steps.filter(s => s.n >= 10).map((s, si) => (
+          <button
+            key={s.n}
+            onClick={() => onNav(String(s.n))}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              width: '100%', background: C.card,
+              border: `1px solid ${C.border}`, borderRadius: '4px',
+              padding: '12px 14px',
+              marginBottom: si === 0 ? '6px' : '0',
+              cursor: 'pointer', textAlign: 'left', fontFamily: sans,
+              transition: 'all 0.15s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = C.blue;
+              e.currentTarget.style.background = C.blueLight;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = C.border;
+              e.currentTarget.style.background = C.card;
+            }}
+          >
+            <div style={{
+              width: '32px', height: '32px', background: C.blue, color: 'white',
+              borderRadius: '2px', display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontWeight: '700', fontSize: '14px', flexShrink: 0,
+              position: 'relative'
+            }}>
+              {s.n}
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0,
+                width: '10px', height: '2px', background: C.teal
+              }} />
+            </div>
+            <div style={{ flex: 1, fontSize: '14px', fontWeight: '500', color: C.text }}>
+              {s.t}
+            </div>
+            <ChevronRight size={16} color={C.gray} />
+          </button>
+        ))}
+      </div>
+
+      <div style={{
+        background: C.tealLight, borderRadius: '2px',
+        borderLeft: `4px solid ${C.teal}`,
+        padding: '14px', marginTop: '16px',
+        display: 'flex', gap: '10px', alignItems: 'flex-start'
+      }}>
+        <FileText size={16} color={C.blue} style={{ flexShrink: 0, marginTop: '2px' }} />
+        <div style={{ fontSize: '12px', color: C.text, lineHeight: '1.5' }}>
+          <strong style={{ color: C.blue }}>7 + 2 Dimensionen</strong> werden im Schritt „Jetziges Leiden" detailliert: 7 Disease-Dimensionen (körperlich-medizinisch) plus 2 Illness-Dimensionen (Einschränkung und subjektives Krankheitskonzept).
+        </div>
+      </div>
+
+      <div style={{
+        background: '#FEF3C7', borderLeft: '4px solid #F59E0B',
+        borderRadius: '2px', padding: '12px 14px', marginTop: '10px',
+        display: 'flex', gap: '10px', alignItems: 'flex-start'
+      }}>
+        <Info size={16} color="#92400E" style={{ flexShrink: 0, marginTop: '2px' }} />
+        <div style={{ fontSize: '12px', color: '#78350F', lineHeight: '1.5' }}>
+          {anamneseHinweis}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function KommunikationContent({ onNav }) {
+  const methods = [
+    { t: 'WWSZ', sub: 'Warten · Wiederholen · Spiegeln · Zusammenfassen' },
+    { t: 'Sanduhrmodell', sub: 'Raum öffnen · fokussieren · Raum öffnen' },
+    { t: 'Fragetechniken', sub: 'Offen · geschlossen · Katalog · Klärung · W-Fragen' },
+    { t: 'Ungünstige Fragen', sub: 'Suggestiv · Doppel · Überfall · Floskel' },
+    { t: 'Agenda Setting', sub: 'Gemeinsam Prioritäten klären' },
+    { t: 'Nonverbale Kommunikation', sub: 'Haltung · Mimik · Gestik · Abstand · Tonfall' },
+  ];
+  return (
+    <>
+      <SectionLabel text="WERKZEUGKASTEN" />
+      {methods.map((m, i) => (
+        <MethodCard key={i} title={m.t} sub={m.sub} onClick={() => onNav(m.t)} />
+      ))}
+    </>
+  );
+}
+
+function EmotionenContent({ onNav }) {
+  const methods = [
+    { t: 'NURSE', sub: 'Name · Understand · Respect · Support · Explore' },
+    { t: 'Cues & Concerns', sub: 'Indirekte Emotionssignale erkennen' },
+    { t: 'Basisemotionen', sub: 'Ekman: Freude · Trauer · Angst · Wut · Ekel · Überraschung · Verachtung' },
+    { t: 'Primär- vs. Sekundäremotionen', sub: 'Angeboren vs. sozial geprägt' },
+    { t: 'Empathie · Mitgefühl · Perspektivenübernahme', sub: 'Abgrenzung und Zusammenhang' },
+    { t: 'Umgang mit intensiven Emotionen', sub: 'Raum geben, nicht beschwichtigen' },
+    { t: 'Umgang mit eigenen Emotionen', sub: 'Selbstregulation im Gespräch' },
+  ];
+  return (
+    <>
+      <SectionLabel text="INHALTE" />
+      {methods.map((m, i) => (
+        <MethodCard key={i} title={m.t} sub={m.sub} onClick={() => onNav(m.t)} />
+      ))}
+    </>
+  );
+}
+
+function MIContent({ onNav }) {
+  const blocks = [
+    { cat: 'GRUNDLAGEN', items: [
+      { t: 'Ambivalenzmodell (Wippe)', sub: 'Menschen sind nicht unmotiviert, sondern ambivalent' },
+      { t: 'MI-Geist', sub: 'Partnerschaft · Akzeptanz · Mitgefühl · Evokation' },
+      { t: '5-Punkte-Haltung', sub: 'Auf die Haltung kommt es an!' },
+    ]},
+    { cat: 'PRINZIPIEN (DARES)', items: [
+      { t: 'Empathie ausdrücken', sub: 'Express Empathy' },
+      { t: 'Diskrepanzen entwickeln', sub: 'Develop Discrepancy' },
+      { t: 'Widerstand umlenken', sub: 'Roll with Resistance' },
+      { t: 'Selbstwirksamkeit fördern', sub: 'Support Self-efficacy' },
+    ]},
+    { cat: 'METHODEN', items: [
+      { t: 'Offene Fragen', sub: 'Thema öffnen' },
+      { t: 'Aktives Zuhören', sub: 'Reflective listening' },
+      { t: 'Würdigung (Affirmation)', sub: 'Stärken anerkennen' },
+      { t: 'Change Talk fördern', sub: '8 Methoden für DARN-CAT' },
+      { t: 'Confidence Talk fördern', sub: '8 Methoden für Zuversicht' },
+      { t: 'Widerstand geschmeidig begegnen', sub: '8 Reaktionsmuster' },
+      { t: 'Zusammenfassen', sub: 'Argumente pro/kontra hörbar machen' },
+    ]},
+    { cat: 'PHASEN', items: [
+      { t: 'Phase 1: Motivation aufbauen', sub: 'Ambivalenz explorieren' },
+      { t: 'Phase 2a: Ziele vereinbaren', sub: 'Setting goals' },
+      { t: 'Phase 2b: Wege der Zielerreichung', sub: 'Considering change options' },
+      { t: 'Phase 2c: Änderungsplan festlegen', sub: 'Arriving at a plan' },
+      { t: 'Phase 2d: Verbindlichkeit stärken', sub: 'Eliciting commitment' },
+    ]},
+  ];
+
+  return (
+    <>
+      {blocks.map((b, i) => (
+        <div key={i} style={{ marginBottom: '22px' }}>
+          <SectionLabel text={b.cat} />
+          {b.items.map((m, j) => (
+            <MethodCard key={j} title={m.t} sub={m.sub} onClick={() => onNav(m.t)} />
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
+function SanduhrIndicator({ phase }) {
+  // 'open' = weit oben, 'narrow' = enger Mittelteil, 'close' = weit unten
+  const labels = {
+    open: 'Öffnen des Gesprächs',
+    narrow: 'Fokussieren des Gesprächs',
+    close: 'Erneut öffnen des Gesprächs',
+  };
+  
+  // Sanduhr-Grundform: zwei Trapeze, oben breit unten breit, in der Mitte verengt
+  // viewBox: 32 breit, 44 hoch
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: '10px',
+      background: C.tealLight,
+      borderRadius: '4px',
+      padding: '8px 12px',
+      marginTop: '8px'
+    }}>
+      <svg width="28" height="40" viewBox="0 0 32 44" style={{ flexShrink: 0 }}>
+        {/* Sanduhr-Kontur */}
+        <path
+          d="M 4 3 L 28 3 L 28 6 L 18 20 Q 16 22 16 22 Q 16 22 14 20 L 4 6 Z 
+             M 4 41 L 28 41 L 28 38 L 18 24 Q 16 22 16 22 Q 16 22 14 24 L 4 38 Z"
+          fill="none"
+          stroke={C.blue}
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        {/* Füllung je nach Phase */}
+        {phase === 'open' && (
+          <>
+            {/* Obere Kammer voll, kleiner Tropfen am Hals */}
+            <path
+              d="M 6 5 L 26 5 L 17 18 Q 16 19 16 19 Q 16 19 15 18 L 6 5 Z"
+              fill={C.teal}
+              opacity="0.85"
+            />
+            {/* Wellige Oberkante als Andeutung von Sand/Flüssigkeit */}
+            <path
+              d="M 6 7 Q 11 5 16 7 T 26 7"
+              fill="none"
+              stroke={C.blue}
+              strokeWidth="0.8"
+              opacity="0.5"
+            />
+          </>
+        )}
+        {phase === 'narrow' && (
+          <>
+            {/* Etwas in oberer Kammer übrig */}
+            <path
+              d="M 9 14 L 23 14 L 17 21 Q 16 22 16 22 Q 16 22 15 21 L 9 14 Z"
+              fill={C.teal}
+              opacity="0.5"
+            />
+            {/* Sand am engen Hals und beginnt unten anzusammeln */}
+            <path
+              d="M 14 22 L 18 22 L 19 26 L 13 26 Z"
+              fill={C.teal}
+              opacity="0.85"
+            />
+            {/* Schon etwas unten */}
+            <path
+              d="M 8 39 L 24 39 L 22 35 Q 16 33 10 35 Z"
+              fill={C.teal}
+              opacity="0.6"
+            />
+          </>
+        )}
+        {phase === 'close' && (
+          <>
+            {/* Untere Kammer voll */}
+            <path
+              d="M 6 39 L 26 39 L 17 26 Q 16 25 16 25 Q 16 25 15 26 L 6 39 Z"
+              fill={C.teal}
+              opacity="0.85"
+            />
+            {/* Wellige Oberkante des unteren Sandes */}
+            <path
+              d="M 7 36 Q 11 38 16 36 T 25 36"
+              fill="none"
+              stroke={C.blue}
+              strokeWidth="0.8"
+              opacity="0.5"
+            />
+          </>
+        )}
+      </svg>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ 
+          fontSize: '10px', letterSpacing: '0.8px',
+          color: C.blue, fontWeight: '700',
+          textTransform: 'uppercase', marginBottom: '1px'
+        }}>
+          Sanduhrmodell
+        </div>
+        <div style={{ 
+          fontSize: '13px', color: C.text,
+          lineHeight: '1.3', fontWeight: '500'
+        }}>
+          {labels[phase]}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnamneseDetailView({ data, stepNum, onBack, sectionTitle }) {
+  const [checkedItems, setCheckedItems] = useState({});
+
+  const toggle = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+
+  return (
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
+      <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px' }}>
+        <button
+          onClick={onBack}
+          style={{
+            background: 'transparent', border: 'none', color: C.blue,
+            fontSize: '13px', cursor: 'pointer', padding: '8px 0',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            marginBottom: '16px', fontFamily: sans, fontWeight: '600'
+          }}
+        >
+          <ChevronLeft size={16} /> {sectionTitle}
+        </button>
+
+        {/* Schritt-Kopf: Nummer + Titel + Tagline */}
+        <div style={{ 
+          display: 'flex', alignItems: 'flex-start', gap: '14px',
+          marginBottom: '14px'
+        }}>
+          <div style={{
+            width: '52px', height: '52px', background: C.blue, color: 'white',
+            borderRadius: '2px', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            fontWeight: '700', fontSize: '22px', flexShrink: 0,
+            position: 'relative', marginTop: '4px'
+          }}>
+            {stepNum}
+            <div style={{ 
+              position: 'absolute', bottom: 0, left: 0,
+              width: '16px', height: '3px', background: C.teal
+            }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '10px', color: C.gray, letterSpacing: '1px', fontWeight: '600', marginBottom: '3px' }}>
+              ANAMNESESCHRITT
+            </div>
+            <h1 style={{ 
+              fontSize: '20px', fontWeight: '700', color: C.blue,
+              margin: '0 0 4px 0', letterSpacing: '-0.3px', lineHeight: '1.2'
+            }}>{data.title}</h1>
+            <div style={{ fontSize: '13px', color: C.gray, fontStyle: 'italic' }}>
+              {data.tagline}
+            </div>
+          </div>
+        </div>
+
+        {/* Sanduhr-Phase als eigene Karte direkt unter dem Header */}
+        {data.sanduhr && <SanduhrIndicator phase={data.sanduhr} />}
+
+        {/* Trennlinie unter Header+Sanduhr */}
+        <div style={{ 
+          borderBottom: `1px solid ${C.border}`,
+          marginTop: '16px', marginBottom: '20px'
+        }} />
+
+        {/* Beschreibung */}
+        <div style={{ 
+          fontSize: '14px', color: C.text, lineHeight: '1.6',
+          marginBottom: '18px'
+        }}>
+          {data.description}
+        </div>
+
+        {/* Didaktischer Hinweis 1 (z.B. Schutz vor vorschnellem Schließen) */}
+        {data.didaktik && (
+          <div style={{
+            background: C.blueLight, borderRadius: '2px',
+            borderLeft: `4px solid ${C.blue}`,
+            padding: '12px 14px', marginBottom: '10px'
+          }}>
+            <div style={{ 
+              fontSize: '11px', letterSpacing: '0.8px', 
+              color: C.blue, fontWeight: '700',
+              marginBottom: '4px', textTransform: 'uppercase'
+            }}>
+              {data.didaktik.titel}
+            </div>
+            <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.55' }}>
+              {data.didaktik.text}
+            </div>
+          </div>
+        )}
+
+        {/* Didaktischer Hinweis 2 (z.B. Up-front Agenda Setting) */}
+        {data.didaktik2 && (
+          <div style={{
+            background: C.blueLight, borderRadius: '2px',
+            borderLeft: `4px solid ${C.blue}`,
+            padding: '12px 14px', marginBottom: '18px'
+          }}>
+            <div style={{ 
+              fontSize: '11px', letterSpacing: '0.8px', 
+              color: C.blue, fontWeight: '700',
+              marginBottom: '4px', textTransform: 'uppercase'
+            }}>
+              {data.didaktik2.titel}
+            </div>
+            <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.55' }}>
+              {data.didaktik2.text}
+            </div>
+          </div>
+        )}
+
+        {/* Spacer falls didaktik vorhanden, sonst nicht */}
+        {!data.didaktik && <div style={{ marginBottom: '4px' }} />}
+        {/* 7+2 Dimensionen (nur bei Schritt mit Dimensionen) */}
+        {data.dimensionen && (
+          <div style={{ marginBottom: '24px' }}>
+            <SectionLabel text="DIE 7 + 2 DIMENSIONEN" />
+            
+            {/* DISEASE-Gruppe */}
+            <div style={{ 
+              fontSize: '10px', letterSpacing: '1.5px',
+              color: C.gray, fontWeight: '700',
+              marginTop: '6px', marginBottom: '6px',
+              display: 'flex', alignItems: 'center', gap: '8px'
+            }}>
+              <div style={{ 
+                background: C.blue, color: 'white',
+                padding: '2px 8px', borderRadius: '2px',
+                fontSize: '9px', letterSpacing: '1px'
+              }}>DISEASE</div>
+              <span>Körperlich-medizinische Dimensionen</span>
+            </div>
+            {data.dimensionen.filter(d => d.group === 'disease').map((d) => (
+              <div key={d.n} style={{
+                display: 'flex', gap: '12px',
+                background: C.card,
+                border: `1px solid ${C.border}`,
+                borderRadius: '4px', padding: '12px 14px',
+                marginBottom: '6px'
+              }}>
+                <div style={{
+                  width: '26px', height: '26px',
+                  background: C.blue, color: 'white',
+                  borderRadius: '2px', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  fontWeight: '700', fontSize: '12px', flexShrink: 0,
+                  marginTop: '2px'
+                }}>{d.n}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: C.blue, marginBottom: '3px' }}>
+                    {d.t}
+                  </div>
+                  <div style={{ fontSize: '12px', color: C.text, fontStyle: 'italic', lineHeight: '1.4' }}>
+                    {d.f}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* ILLNESS-Gruppe */}
+            <div style={{ 
+              fontSize: '10px', letterSpacing: '1.5px',
+              color: C.gray, fontWeight: '700',
+              marginTop: '14px', marginBottom: '6px',
+              display: 'flex', alignItems: 'center', gap: '8px'
+            }}>
+              <div style={{ 
+                background: C.teal, color: 'white',
+                padding: '2px 8px', borderRadius: '2px',
+                fontSize: '9px', letterSpacing: '1px'
+              }}>ILLNESS</div>
+              <span>Subjektive Erlebensdimensionen</span>
+            </div>
+            {data.dimensionen.filter(d => d.group === 'illness').map((d) => (
+              <div key={d.n} style={{
+                display: 'flex', gap: '12px',
+                background: C.card,
+                border: `1px solid ${C.border}`,
+                borderRadius: '4px', padding: '12px 14px',
+                marginBottom: '6px'
+              }}>
+                <div style={{
+                  width: '26px', height: '26px',
+                  background: C.teal, color: 'white',
+                  borderRadius: '2px', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  fontWeight: '700', fontSize: '12px', flexShrink: 0,
+                  marginTop: '2px'
+                }}>{d.n}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: C.blue, marginBottom: '3px' }}>
+                    {d.t}
+                  </div>
+                  <div style={{ fontSize: '12px', color: C.text, fontStyle: 'italic', lineHeight: '1.4' }}>
+                    {d.f}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Hinweis aus den Daten (z.B. zu NURSE) */}
+            {data.hinweis && (
+              <div style={{
+                background: '#FEF3C7',
+                borderLeft: '4px solid #F59E0B',
+                borderRadius: '2px',
+                padding: '10px 12px', marginTop: '10px',
+                display: 'flex', gap: '8px', alignItems: 'flex-start'
+              }}>
+                <Info size={14} color="#92400E" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div style={{ fontSize: '12px', color: '#78350F', lineHeight: '1.5' }}>
+                  {data.hinweis}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Formulierungen */}
+        {data.formulierungen && data.formulierungen.length > 0 && (
+          <div style={{ marginBottom: '22px' }}>
+            <SectionLabel text="FORMULIERUNGEN" />
+            <div style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: '14px' }}>
+              {data.formulierungen.map((f, i) => (
+                <div key={i} style={{ 
+                  fontSize: '13px', color: C.text, fontStyle: 'italic',
+                  lineHeight: '1.5', marginBottom: '8px'
+                }}>
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Checkliste */}
+        {data.checklist && data.checklist.length > 0 && (
+          <div style={{ marginBottom: '22px' }}>
+            <SectionLabel text="CHECKLISTE" />
+            {data.checklist.map((item, i) => {
+              const id = `step${stepNum}-item${i}`;
+              const checked = checkedItems[id];
+              return (
+                <div
+                  key={i}
+                  onClick={() => toggle(id)}
+                  style={{
+                    display: 'flex', gap: '10px', padding: '8px 0',
+                    cursor: 'pointer', alignItems: 'flex-start',
+                    opacity: checked ? 0.55 : 1,
+                    transition: 'opacity 0.15s'
+                  }}
+                >
+                  <div style={{ marginTop: '1px', flexShrink: 0 }}>
+                    {checked 
+                      ? <Check size={16} color={C.teal} strokeWidth={2.5} /> 
+                      : <Circle size={15} color={C.borderStrong} />}
+                  </div>
+                  <div style={{ 
+                    fontSize: '13px', color: C.text, lineHeight: '1.5',
+                    textDecoration: checked ? 'line-through' : 'none'
+                  }}>
+                    {item}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Querverweise */}
+        {data.refs && data.refs.length > 0 && (
+          <div style={{
+            background: C.blueLight, borderRadius: '2px',
+            borderLeft: `3px solid ${C.blue}`,
+            padding: '12px 14px', marginTop: '8px'
+          }}>
+            <div style={{ 
+              fontSize: '10px', letterSpacing: '1.5px', 
+              color: C.blue, fontWeight: '700', marginBottom: '6px'
+            }}>
+              VERWANDTE METHODEN
+            </div>
+            {data.refs.map((ref, i) => (
+              <div key={i} style={{ 
+                fontSize: '12px', color: C.text, lineHeight: '1.5',
+                marginBottom: i < data.refs.length - 1 ? '3px' : '0'
+              }}>
+                <strong style={{ color: C.blue }}>{ref.text}</strong>
+                <span style={{ color: C.gray }}> · in {ref.loc}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PhaseCard({ num, title, items, onClick, isAxis }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'block', width: '100%', textAlign: 'left',
+        background: C.card, border: `1px solid ${C.border}`,
+        borderRadius: '4px', padding: '14px',
+        marginBottom: '8px', cursor: 'pointer', fontFamily: sans,
+        transition: 'all 0.15s'
+      }}
+      onMouseEnter={(e) => { 
+        e.currentTarget.style.borderColor = C.blue; 
+        e.currentTarget.style.background = C.blueLight;
+      }}
+      onMouseLeave={(e) => { 
+        e.currentTarget.style.borderColor = C.border; 
+        e.currentTarget.style.background = C.card;
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+        {num && (
+          <div style={{
+            width: '26px', height: '26px', background: C.blue, color: 'white',
+            borderRadius: '2px', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            fontWeight: '700', fontSize: '12px', position: 'relative'
+          }}>
+            {num}
+            <div style={{ 
+              position: 'absolute', bottom: 0, left: 0,
+              width: '8px', height: '2px', background: C.teal
+            }} />
+          </div>
+        )}
+        {isAxis && (
+          <div style={{ width: '26px', height: '4px', background: C.teal, borderRadius: '1px' }} />
+        )}
+        <div style={{ fontSize: '15px', fontWeight: '600', color: C.blue, flex: 1 }}>
+          {title}
+        </div>
+        <ChevronRight size={16} color={C.gray} />
+      </div>
+      <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.5', marginLeft: '36px' }}>
+        {items.join(' · ')}
+      </div>
+    </button>
+  );
+}
+
+function MethodCard({ title, sub, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '12px',
+        width: '100%', background: C.card,
+        border: `1px solid ${C.border}`, borderRadius: '4px',
+        padding: '12px 14px', marginBottom: '6px',
+        cursor: 'pointer', textAlign: 'left', fontFamily: sans,
+        transition: 'all 0.15s'
+      }}
+      onMouseEnter={(e) => { 
+        e.currentTarget.style.borderColor = C.blue;
+        e.currentTarget.style.background = C.blueLight;
+      }}
+      onMouseLeave={(e) => { 
+        e.currentTarget.style.borderColor = C.border;
+        e.currentTarget.style.background = C.card;
+      }}
+    >
+      <div style={{ 
+        width: '4px', alignSelf: 'stretch', minHeight: '26px',
+        background: C.teal, borderRadius: '1px', flexShrink: 0
+      }} />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: '14px', fontWeight: '600', color: C.blue, marginBottom: '1px' }}>
+          {title}
+        </div>
+        <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>
+          {sub}
+        </div>
+      </div>
+      <ChevronRight size={16} color={C.gray} />
+    </button>
+  );
+}
+
+// ========== Feedback-Inhaltsdaten ==========
+const feedbackData = {
+  'wie-gebe-ich-feedback': {
+    title: 'Wie gebe ich Feedback?', tagline: 'Fünf Grundprinzipien',
+    description: 'Wirkungsvolles Feedback folgt klaren Prinzipien. Die wichtigste Voraussetzung: Den Mut haben, überhaupt anzusprechen, was einen stört.',
+    formulierungen: ['„Ich habe wahrgenommen, dass …"','„Das hat bei mir die Wirkung, dass …"','„Ich wünsche mir, dass …"'],
+    checklist: ['Ansprechen, wenn etwas stört — jeder ist sein eigener Chairman','Ich-Botschaften als persönliche Meinung, nicht als objektive Wahrheit','Konkret an einzelnen Situationen (direkt, nicht verallgemeinernd)','Auf Verhalten bezogen — nicht auf die Person','Wertschätzend, respektvoll, konstruktiv'],
+    refs: [{ text: '3W-Regel', loc: 'Teamkompetenz & Feedback' }],
+  },
+  '3w-regel': {
+    title: '3W-Regel — Feedback geben', tagline: 'Wahrnehmung · Wirkung · Wunsch',
+    description: 'Die 3W-Regel strukturiert Feedback für die Geber:in in drei Schritte: Was wurde beobachtet? Welche Wirkung hat es? Was wird gewünscht?',
+    konzept: [
+      { t: 'Wahrnehmung schildern', d: 'Konkrete Beobachtung ohne Bewertung — was wurde tatsächlich gesehen oder gehört?' },
+      { t: 'Wirkung erläutern', d: 'Ich-Botschaft: Welche Wirkung hat das Verhalten auf mich oder die Gruppe?' },
+      { t: 'Wunsch formulieren', d: 'Was soll sich ändern? Offen formulieren und Bereitschaft erfragen.' },
+    ],
+    formulierungen: ['„In den letzten vier Wochen bist Du dreimal 20 Minuten zu spät zu unseren Treffen erschienen."','„Mir ist es wichtig, dass wir die Zeit für Treffen effizient nutzen. Ich merke, dass ich mich ärgere, wenn unsere Gruppe nicht voll arbeitsfähig ist."','„Ich wünsche mir von Dir in Zukunft mehr Pünktlichkeit. Wärst Du dazu bereit?"','„Was macht es schwierig für Dich?"'],
+    checklist: ['Wahrnehmung: konkret, beobachtbar, ohne Interpretation','Wirkung: Ich-Botschaft, ehrlich und persönlich','Wunsch: klar formulieren, Bereitschaft erfragen','Nicht anklagen, sondern einladen'],
+    refs: [{ text: '3Z-Regel', loc: 'Teamkompetenz & Feedback' }],
+  },
+  '3z-regel': {
+    title: '3Z-Regel — Feedback nehmen', tagline: 'Zuhören · Zurückfragen · Zusammenfassen',
+    description: 'Die 3Z-Regel strukturiert den Umgang mit Feedback für die Nehmer:in. Feedback ist ein Geschenk — man muss es nicht annehmen, aber man sollte es ernsthaft bedenken.',
+    konzept: [
+      { t: 'Zuhören', d: 'Keine Rechtfertigung, Verteidigung oder Erklärung während das Feedback gegeben wird.' },
+      { t: 'Zurückfragen', d: 'Nachfragen, wenn etwas unklar ist — nicht um zu diskutieren, sondern um zu verstehen.' },
+      { t: 'Zusammenfassen', d: 'Wichtige Erkenntnisse in eigenen Worten formulieren.' },
+    ],
+    checklist: ['Zuhören ohne Unterbrechung oder Rechtfertigung','Emotionen zunächst sinken lassen','Zurückfragen bei Unklarheiten','Zusammenfassen: was nehme ich mit?','Feedback als Angebot betrachten, nicht als Urteil'],
+    refs: [{ text: '3W-Regel', loc: 'Teamkompetenz & Feedback' }, { text: 'WWSZ · Zusammenfassen', loc: 'Kommunikation' }],
+  },
+  'feedback-empfangen': {
+    title: 'Wie empfange ich Feedback?', tagline: 'Offenheit und blinde Flecken',
+    description: 'Feedback zu empfangen ist anspruchsvoll — es kann negative Reaktionen auslösen. Wer offen bleibt, kann von blinden Flecken profitieren, die andere sehen.',
+    checklist: ['Sei offen für Feedback — falls Du es gerade nicht bist, teile das mit','Jeder hat blinde Flecken — andere helfen Dir, sie zu erkennen','Fokussiere Dich auf die Aufgabe, nicht auf die eigene Person','Lass Emotionen sinken, bevor Du reagierst','Feedback ist ein Geschenk: Du musst es nicht annehmen, aber denk darüber nach','Hole ggf. zusätzliche Informationen ein'],
+    refs: [{ text: 'Johari-Fenster', loc: 'Teamkompetenz & Feedback' }, { text: '3Z-Regel', loc: 'Teamkompetenz & Feedback' }],
+  },
+  'was-ist-feedback': {
+    title: 'Was ist Feedback?', tagline: 'Definition und Grundbegriffe',
+    description: 'Feedback bezeichnet spezifische Informationen über den Vergleich zwischen der Leistung eines Lernenden und einem Standard — mit dem Ziel, diese Leistung zu verbessern.',
+    konzept: [
+      { t: 'Standard klären', d: 'Vor dem Feedback: Welcher Standard gilt? Eigene Erwartung, Gruppenstandard, institutioneller Standard oder gemeinsam verhandelter Standard?' },
+      { t: 'Ziel: Wo will ich hin?', d: 'Was soll nach dem Feedback anders oder besser sein?' },
+      { t: 'Prozess: Wie bin ich unterwegs?', d: 'Wie gut läuft es gerade im Hinblick auf das Ziel?' },
+      { t: 'Plan: Was mache ich als nächstes?', d: 'Welche konkreten nächsten Schritte ergeben sich?' },
+    ],
+    checklist: ['Standard vor dem Feedback klären','Unterschied zwischen eigenem und gemeinsamem Standard beachten','Ziel, Prozess und Plan als drei Ebenen unterscheiden'],
+    refs: [],
+  },
+  'was-bringt-feedback': {
+    title: 'Was bringt Feedback?', tagline: 'Evidenz zur Wirksamkeit',
+    description: 'Feedback gehört zu den wirksamsten Einflussfaktoren auf Lernen und Leistung — kann aber auch negative Effekte haben.',
+    konzept: [
+      { t: 'Hattie & Timberley (2007)', d: '„Feedback is one of the most powerful influences on learning and achievement, but this impact can be either positive or negative." — Wirkung hängt stark von Art und Kontext ab.' },
+      { t: 'Veloski et al. (2006)', d: 'Systematischer Review, 41 Studien: 77% mit positivem Effekt auf klinische Kompetenz. Feedback war effektiv wenn kontinuierlich über Monate/Jahre, von vertrauenswürdigen Personen gegeben und Lernende aktiv beteiligt wurden.' },
+    ],
+    checklist: ['Kontinuierliches Feedback ist wirkungsvoller als einmaliges','Vertrauensbeziehung zur feedbackgebenden Person ist entscheidend','Lernende aktiv in den Prozess einbeziehen'],
+    refs: [],
+  },
+  'feedback-ebenen': {
+    title: 'Wozu kann man Feedback geben?', tagline: 'Die vier Ebenen nach Hattie',
+    description: 'Feedback kann auf vier verschiedenen Ebenen gegeben werden. Das Ziel: den Unterschied zwischen aktueller Performanz und dem angestrebten Standard zu reduzieren.',
+    konzept: [
+      { t: 'Aufgabe', d: 'Wie gut werden Aufgaben verstanden bzw. ausgeführt? (z. B. Anamnese gelungen ja/nein)' },
+      { t: 'Prozess', d: 'Welche Prozesse sind notwendig? (z. B. Beziehungsaufbau, Strukturierung, Vollständigkeit, Umgang mit Sorgen)' },
+      { t: 'Selbstregulation', d: 'Wie reguliere ich mich, meine Ziele und Wege? (z. B. Vorbereitung, Stressumgang)' },
+      { t: 'Selbst', d: 'Wie sehe ich mich selbst? — Diese Ebene ist am wenigsten lernförderlich.' },
+    ],
+    checklist: ['Feedback auf Aufgaben- und Prozessebene ist am lernwirksamsten','Selbstregulations-Feedback fördert Autonomie','Feedback auf Selbst-Ebene vermeiden'],
+    refs: [],
+  },
+  'johari': {
+    title: 'Johari-Fenster', tagline: 'Selbst- und Fremdwahrnehmung · Psychologische Sicherheit',
+    description: 'Das Johari-Fenster zeigt, welche Informationen über eine Person ihr selbst und anderen bekannt oder unbekannt sind.',
+    konzept: [
+      { t: 'Öffentlicher Bereich', d: 'Mir bekannt · Anderen bekannt.' },
+      { t: 'Blinder Fleck', d: 'Mir unbekannt · Anderen bekannt — Feedback hilft, diesen Bereich zu verkleinern.' },
+      { t: 'Geheimer Bereich', d: 'Mir bekannt · Anderen unbekannt.' },
+      { t: 'Unbekannter Bereich', d: 'Mir unbekannt · Anderen unbekannt — noch nicht entdeckte Potenziale.' },
+    ],
+    checklist: ['Feedback verkleinert den Blinden Fleck','Psychologische Sicherheit ist Voraussetzung für offenes Feedback','Vertrauen in Wissen, Aufrichtigkeit und gute Absichten'],
+    refs: [],
+  },
+};
+
+function FeedbackContent({ onNav }) {
+  const praxis = [
+    { id: 'wie-gebe-ich-feedback', t: 'Wie gebe ich Feedback?', sub: 'Fünf Grundprinzipien · Ich-Botschaften' },
+    { id: '3w-regel', t: '3W-Regel — Feedback geben', sub: 'Wahrnehmung · Wirkung · Wunsch' },
+    { id: '3z-regel', t: '3Z-Regel — Feedback nehmen', sub: 'Zuhören · Zurückfragen · Zusammenfassen' },
+    { id: 'feedback-empfangen', t: 'Wie empfange ich Feedback?', sub: 'Offenheit · blinde Flecken · Geschenk-Metapher' },
+  ];
+  const theorie = [
+    { id: 'was-ist-feedback', t: 'Was ist Feedback?', sub: 'Definition · Standard · Ziel · Prozess · Plan' },
+    { id: 'was-bringt-feedback', t: 'Was bringt Feedback?', sub: 'Hattie & Timberley 2007 · Veloski et al. 2006' },
+    { id: 'feedback-ebenen', t: 'Wozu kann man Feedback geben?', sub: 'Aufgabe · Prozess · Selbstregulation · Selbst' },
+    { id: 'johari', t: 'Johari-Fenster', sub: 'Blinder Fleck · Psychologische Sicherheit · Vertrauen' },
+  ];
+  return (
+    <>
+      <SectionLabel text="PRAKTISCHE REGELN" />
+      {praxis.map((m, i) => <FeedbackKachel key={m.id} num={i+1} title={m.t} sub={m.sub} color={C.blue} accentColor={C.teal} onClick={() => onNav(m.id)} />)}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '20px 0 12px' }}>
+        <div style={{ flex: 1, height: '1px', background: C.border }} />
+        <div style={{ fontSize: '10px', letterSpacing: '1px', color: C.gray, fontWeight: '600', textTransform: 'uppercase', padding: '0 4px' }}>Hintergrund & Theorie</div>
+        <div style={{ flex: 1, height: '1px', background: C.border }} />
+      </div>
+      {theorie.map((m, i) => <FeedbackKachel key={m.id} num={i+1} title={m.t} sub={m.sub} color={C.teal} accentColor={C.blue} onClick={() => onNav(m.id)} />)}
+    </>
+  );
+}
+
+function FeedbackKachel({ num, title, sub, color, accentColor, onClick }) {
+  return (
+    <button onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: '4px', padding: '12px 14px', marginBottom: '6px', cursor: 'pointer', textAlign: 'left', fontFamily: sans, transition: 'all 0.15s' }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = color; e.currentTarget.style.background = color === C.blue ? C.blueLight : C.tealLight; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.card; }}>
+      <div style={{ width: '32px', height: '32px', background: color, color: 'white', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '14px', flexShrink: 0, position: 'relative' }}>
+        {num}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '10px', height: '2px', background: accentColor }} />
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: '14px', fontWeight: '500', color: C.text, marginBottom: '1px' }}>{title}</div>
+        <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>{sub}</div>
+      </div>
+      <ChevronRight size={16} color={C.gray} />
+    </button>
+  );
+}
+
+function FeedbackDetailView({ data, onBack, sectionTitle }) {
+  const [checkedItems, setCheckedItems] = useState({});
+  const toggle = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  return (
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
+      <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px' }}>
+        <button onClick={onBack} style={{ background: 'transparent', border: 'none', color: C.blue, fontSize: '13px', cursor: 'pointer', padding: '8px 0', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px', fontFamily: sans, fontWeight: '600' }}>
+          <ChevronLeft size={16} /> {sectionTitle}
+        </button>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '14px' }}>
+          <div style={{ width: '52px', height: '52px', background: C.blue, color: 'white', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', marginTop: '4px' }}>
+            <Users size={22} color="white" strokeWidth={2} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '16px', height: '3px', background: C.teal }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '10px', color: C.gray, letterSpacing: '1px', fontWeight: '600', marginBottom: '3px' }}>TEAMKOMPETENZ & FEEDBACK</div>
+            <h1 style={{ fontSize: '20px', fontWeight: '700', color: C.blue, margin: '0 0 4px 0', letterSpacing: '-0.3px', lineHeight: '1.2' }}>{data.title}</h1>
+            <div style={{ fontSize: '13px', color: C.gray, fontStyle: 'italic' }}>{data.tagline}</div>
+          </div>
+        </div>
+        <div style={{ borderBottom: `1px solid ${C.border}`, marginBottom: '20px' }} />
+        <div style={{ fontSize: '14px', color: C.text, lineHeight: '1.6', marginBottom: '20px' }}>{data.description}</div>
+        {data.konzept && data.konzept.length > 0 && (
+          <div style={{ marginBottom: '22px' }}>
+            <SectionLabel text="KONZEPT" />
+            {data.konzept.map((k, i) => (
+              <div key={i} style={{ background: C.blueLight, borderRadius: '2px', borderLeft: `3px solid ${C.blue}`, padding: '12px 14px', marginBottom: '8px' }}>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: C.blue, marginBottom: '3px' }}>{k.t}</div>
+                <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.5' }}>{k.d}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {data.formulierungen && data.formulierungen.length > 0 && (
+          <div style={{ marginBottom: '22px' }}>
+            <SectionLabel text="FORMULIERUNGEN" />
+            <div style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: '14px' }}>
+              {data.formulierungen.map((f, i) => <div key={i} style={{ fontSize: '13px', color: C.text, fontStyle: 'italic', lineHeight: '1.5', marginBottom: '8px' }}>{f}</div>)}
+            </div>
+          </div>
+        )}
+        {data.checklist && data.checklist.length > 0 && (
+          <div style={{ marginBottom: '22px' }}>
+            <SectionLabel text="CHECKLISTE" />
+            {data.checklist.map((item, i) => {
+              const id = `fb-${data.title}-${i}`;
+              const checked = checkedItems[id];
+              return (
+                <div key={i} onClick={() => toggle(id)} style={{ display: 'flex', gap: '10px', padding: '8px 0', cursor: 'pointer', alignItems: 'flex-start', opacity: checked ? 0.55 : 1 }}>
+                  <div style={{ marginTop: '1px', flexShrink: 0 }}>
+                    {checked ? <Check size={16} color={C.teal} strokeWidth={2.5} /> : <Circle size={15} color={C.borderStrong} />}
+                  </div>
+                  <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.5', textDecoration: checked ? 'line-through' : 'none' }}>{item}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {data.refs && data.refs.length > 0 && (
+          <div style={{ background: C.blueLight, borderRadius: '2px', borderLeft: `3px solid ${C.blue}`, padding: '12px 14px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '6px' }}>VERWANDTE METHODEN</div>
+            {data.refs.map((ref, i) => <div key={i} style={{ fontSize: '12px', color: C.text, lineHeight: '1.5', marginBottom: '2px' }}><strong style={{ color: C.blue }}>{ref.text}</strong><span style={{ color: C.gray }}> · in {ref.loc}</span></div>)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
