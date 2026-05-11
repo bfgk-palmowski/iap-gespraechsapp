@@ -487,21 +487,6 @@ export default function App() {
               <ChevronRight size={20} color="rgba(255,255,255,0.8)" style={{ position: 'relative', flexShrink: 0 }} />
             </button>
           )}
-
-          {/* Manueller Installationshinweis: immer sichtbar wenn nicht installiert und kein Auto-Prompt */}
-          {!installPrompt && !installed && (
-
-          {/* Bestätigung nach Installation */}
-          {installed && (
-            <div style={{
-              background: C.tealLight, borderLeft: `4px solid ${C.teal}`,
-              borderRadius: '2px', padding: '12px 14px',
-              marginBottom: '16px', fontSize: '13px', color: C.text
-            }}>
-              ✓ App erfolgreich installiert — jetzt auf dem Homescreen verfügbar.
-            </div>
-          )}
-
           {/* IAP Logo */}
           <div style={{ marginBottom: '24px' }}>
             <img 
