@@ -976,6 +976,17 @@ function CalgaryContent({ onNav }) {
         fontSize: '13px', color: C.text, lineHeight: '1.55'
       }}>
         Die <strong style={{ color: C.blue }}>vier Phasen</strong> werden im Gespräch der Reihe nach durchlaufen. Die beiden <strong style={{ color: C.blue }}>Querachsen</strong> begleiten das gesamte Gespräch durchgängig.
+        {/* Quellenangabe */}
+      <div style={{
+        fontSize: '11px',
+        color: C.textLight,
+        marginTop: '12px',
+        marginBottom: '20px',
+        paddingLeft: '4px',
+        lineHeight: '1.5'
+      }}>
+        <strong>Quelle:</strong> Kurtz S, Silverman J, Draper J. <em>Teaching and Learning Communication Skills in Medicine.</em> 2nd ed. Radcliffe Publishing; 2005.
+      </div>
       </div>
 
       {/* Querachse oben: Strukturieren */}
