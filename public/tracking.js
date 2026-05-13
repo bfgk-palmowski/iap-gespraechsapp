@@ -4,7 +4,7 @@
  */
 
 (function() {
-  const TRACKING_ENDPOINT = 'https://medizinevidenz.de/tracking/track.php';
+const TRACKING_ENDPOINT = 'https://palmowski.net/tracking/track.php';
   
   /**
    * Sendet ein Tracking-Event
