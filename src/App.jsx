@@ -362,6 +362,10 @@ export default function App() {
   // Navigation: statt direkt State zu setzen, URL-Hash ändern — 
   // der hashchange-Listener aktualisiert dann den State
   const navigate = (targetView, targetSection = null, targetSubsection = null) => {
+      // Tracking: Modul-Klick
+  if (window.trackIAPEvent && targetView === 'section' && targetSection) {
+    window.trackIAPEvent('module_click', targetSection);
+  }
     let hash = '';
     if (targetView === 'section' && targetSection) {
       hash = `#/${encodeURIComponent(targetSection)}`;
