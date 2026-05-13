@@ -880,6 +880,26 @@ export default function App() {
               style={{ color: C.blue, fontSize: '13px', fontWeight: '600', textDecoration: 'underline' }}>
               patientenperspektive.de/impressum.html
             </a>
+            </div>
+
+          {/* Bildnachweise */}
+          <div style={{
+            background: C.blueLight,
+            borderLeft: `4px solid ${C.teal}`,
+            borderRadius: '2px',
+            padding: '12px 14px',
+            marginTop: '16px'
+          }}>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.teal, fontWeight: '700', marginBottom: '6px' }}>BILDNACHWEISE</div>
+            <div style={{ fontSize: '12px', color: C.text, lineHeight: '1.5' }}>
+              Illustrationen: Jasmin Keune-Galeski<br />
+              <a href="https://jasminkeunegaleski.com/" target="_blank" rel="noopener noreferrer"
+                style={{ color: C.teal, textDecoration: 'underline' }}>
+                jasminkeunegaleski.com
+              </a>
+            </div>
+          </div>
+        </div>
           </div>
         </div>
       </div>
