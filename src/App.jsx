@@ -362,6 +362,10 @@ export default function App() {
   // Navigation: statt direkt State zu setzen, URL-Hash ändern — 
   // der hashchange-Listener aktualisiert dann den State
   const navigate = (targetView, targetSection = null, targetSubsection = null) => {
+      // Tracking: Modul-Klick
+  if (window.trackIAPEvent && targetView === 'section' && targetSection) {
+    window.trackIAPEvent('module_click', targetSection);
+  }
     let hash = '';
     if (targetView === 'section' && targetSection) {
       hash = `#/${encodeURIComponent(targetSection)}`;
@@ -390,7 +394,7 @@ export default function App() {
       subtitle: '9-stufiges Schema · 7 Dimensionen',
       icon: Activity,
       description: 'Von der Landkarte der Beschwerden bis zum gemeinsamen Planen.',
-      illustration: '/testapp/img/sanduhr.png'
+      illustration: './img/sanduhr.png'
     },
     feedback: {
       title: 'Teamkompetenz & Feedback',
@@ -404,7 +408,7 @@ export default function App() {
       subtitle: 'WWSZ · Sanduhrmodell · Fragetechniken · Nonverbal',
       icon: MessageCircle,
       description: 'Der Werkzeugkasten für strukturierte Gespräche.',
-      illustration: '/testapp/img/arzt.png'
+      illustration: './img/arzt.png'
     },
     emotionen: {
       title: 'Umgang mit Emotionen',
@@ -418,7 +422,7 @@ export default function App() {
   if (view === 'home') {
     return (
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px', position: 'relative' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px', position: 'relative' }}>
           
           {/* Update-Banner */}
           {updateAvailable && (
@@ -487,36 +491,10 @@ export default function App() {
               <ChevronRight size={20} color="rgba(255,255,255,0.8)" style={{ position: 'relative', flexShrink: 0 }} />
             </button>
           )}
-
-          {/* Manueller Installationshinweis: immer sichtbar wenn nicht installiert und kein Auto-Prompt */}
-          {!installPrompt && !installed && (
-            <div style={{
-              background: C.blueLight, borderLeft: `4px solid ${C.blue}`,
-              borderRadius: '2px', padding: '12px 14px', marginBottom: '16px',
-              display: 'flex', gap: '10px', alignItems: 'flex-start'
-            }}>
-              <Info size={16} color={C.blue} style={{ flexShrink: 0, marginTop: '2px' }} />
-              <div style={{ fontSize: '12.5px', color: C.text, lineHeight: '1.55' }}>
-                <strong style={{ color: C.blue }}>Als App installieren:</strong> Tippe in Chrome auf das Menü (⋮) und wähle „App installieren" oder „Zum Startbildschirm hinzufügen".
-              </div>
-            </div>
-          )}
-
-          {/* Bestätigung nach Installation */}
-          {installed && (
-            <div style={{
-              background: C.tealLight, borderLeft: `4px solid ${C.teal}`,
-              borderRadius: '2px', padding: '12px 14px',
-              marginBottom: '16px', fontSize: '13px', color: C.text
-            }}>
-              ✓ App erfolgreich installiert — jetzt auf dem Homescreen verfügbar.
-            </div>
-          )}
-
           {/* IAP Logo */}
           <div style={{ marginBottom: '24px' }}>
             <img 
-              src="/testapp/img/iap-logo.png"
+              src="./img/iap-logo.png"
               alt="IAP – Lehrstuhl für die Ausbildung personaler und interpersonaler Kompetenzen im Gesundheitswesen, Universität Witten/Herdecke"
               style={{ 
                 width: '100%', maxWidth: '220px',
@@ -562,7 +540,7 @@ export default function App() {
               </div>
             </div>
             <img 
-              src="/testapp/img/gespraech.png" 
+              src="./img/gespraech.png" 
               alt="" 
               style={{ 
                 height: '110px', width: 'auto', flexShrink: 0,
@@ -717,7 +695,7 @@ export default function App() {
 
     return (
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px' }}>
           <button
             onClick={navigateBack}
             style={{
@@ -811,7 +789,7 @@ export default function App() {
     // Andere Module: Platzhalter (wird später inhaltlich ergänzt)
     return (
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px' }}>
           <button
             onClick={navigateBack}
             style={{
@@ -864,7 +842,7 @@ export default function App() {
   if (view === 'impressum') {
     return (
       <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 80px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 80px' }}>
           <button onClick={() => setView('home')} style={{
             background: 'transparent', border: 'none', color: C.blue,
             fontSize: '13px', cursor: 'pointer', padding: '8px 0',
@@ -902,24 +880,6 @@ export default function App() {
               style={{ color: C.blue, fontSize: '13px', fontWeight: '600', textDecoration: 'underline' }}>
               patientenperspektive.de/impressum.html
             </a>
-          </div>
-
-          {/* Bildnachweise */}
-          <div style={{
-            background: C.blueLight,
-            borderLeft: `4px solid ${C.teal}`,
-            borderRadius: '2px',
-            padding: '12px 14px',
-            marginTop: '16px'
-          }}>
-            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.teal, fontWeight: '700', marginBottom: '6px' }}>BILDNACHWEISE</div>
-            <div style={{ fontSize: '12px', color: C.text, lineHeight: '1.5' }}>
-              Illustrationen: Jasmin Keune-Galeski<br />
-              <a href="https://jasminkeunegaleski.com/" target="_blank" rel="noopener noreferrer"
-                style={{ color: C.teal, textDecoration: 'underline' }}>
-                jasminkeunegaleski.com
-              </a>
-            </div>
           </div>
         </div>
       </div>
@@ -1016,6 +976,17 @@ function CalgaryContent({ onNav }) {
         fontSize: '13px', color: C.text, lineHeight: '1.55'
       }}>
         Die <strong style={{ color: C.blue }}>vier Phasen</strong> werden im Gespräch der Reihe nach durchlaufen. Die beiden <strong style={{ color: C.blue }}>Querachsen</strong> begleiten das gesamte Gespräch durchgängig.
+        {/* Quellenangabe */}
+      <div style={{
+        fontSize: '11px',
+        color: C.textLight,
+        marginTop: '12px',
+        marginBottom: '20px',
+        paddingLeft: '4px',
+        lineHeight: '1.5'
+      }}>
+        <strong>Quelle:</strong> Kurtz S, Silverman J, Draper J. <em>Teaching and Learning Communication Skills in Medicine.</em> 2nd ed. Radcliffe Publishing; 2005.
+      </div>
       </div>
 
       {/* Querachse oben: Strukturieren */}
@@ -1590,7 +1561,7 @@ function AnamneseDetailView({ data, stepNum, onBack, sectionTitle }) {
 
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
-      <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px' }}>
         <button
           onClick={onBack}
           style={{
@@ -2104,7 +2075,7 @@ function FeedbackDetailView({ data, onBack, sectionTitle }) {
   const toggle = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
-      <div style={{ maxWidth: '520px', margin: '0 auto', padding: '20px 20px 100px' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px' }}>
         <button onClick={onBack} style={{ background: 'transparent', border: 'none', color: C.blue, fontSize: '13px', cursor: 'pointer', padding: '8px 0', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px', fontFamily: sans, fontWeight: '600' }}>
           <ChevronLeft size={16} /> {sectionTitle}
         </button>
