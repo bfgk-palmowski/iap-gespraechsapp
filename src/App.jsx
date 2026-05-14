@@ -1376,7 +1376,11 @@ function AnamneseContent({ onNav }) {
         paddingLeft: '4px',
         lineHeight: '1.5'
       }}>
-        <strong>Quelle:</strong> Füeßl HS, Middeke M. <em>Anamnese und klinische Untersuchung.</em> 7. Aufl. Stuttgart: Thieme; 2024.
+        <strong>Quelle:</strong> Füeßl HS, Middeke M. <em>Anamnese und klinische Untersuchung.</em> 7. überarb. Aufl. Stuttgart: Thieme; 2022.{' '}
+        <a href="https://doi.org/10.1055/b000000572" target="_blank" rel="noopener noreferrer"
+          style={{ color: C.textMuted, textDecoration: 'underline' }}>
+          10.1055/b000000572
+        </a>
       </div>
     </>
   );
