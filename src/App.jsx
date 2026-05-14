@@ -754,7 +754,7 @@ export default function App() {
           {section === 'calgary' && <CalgaryContent onNav={(t) => navigate('subsection', 'calgary', t)} />}
           {section === 'anamnese' && <AnamneseContent onNav={(t) => navigate('subsection', 'anamnese', t)} />}
           {section === 'feedback' && <FeedbackContent onNav={(t) => navigate('subsection', 'feedback', t)} />}
-          {section === 'kommunikation' && <KommunikationContent onNav={(t) => navigate('subsection', 'kommunikation', t)} />}
+          {section === 'kommunikation' && <KommunikationContent onNav={(t) => navigate('subsection', 'kommunikation', t)} onGoToCcg={() => navigate('section', 'calgary')} />}
           {section === 'emotionen' && <EmotionenContent onNav={(t) => navigate('subsection', 'emotionen', t)} />}
         </div>
       </div>
@@ -780,6 +780,16 @@ export default function App() {
       return (
         <FeedbackDetailView
           data={feedbackData[subsection]}
+          onBack={navigateBack}
+          sectionTitle={sec.title}
+        />
+      );
+    }
+
+    if (section === 'kommunikation' && kommunikationData[subsection]) {
+      return (
+        <KommunikationDetailView
+          data={kommunikationData[subsection]}
           onBack={navigateBack}
           sectionTitle={sec.title}
         />
@@ -1386,7 +1396,48 @@ function AnamneseContent({ onNav }) {
   );
 }
 
-function KommunikationContent({ onNav }) {
+const kommunikationData = {
+  'WWSZ': {
+    title: 'WWSZ',
+    tagline: 'Warten · Wiederholen · Spiegeln · Zusammenfassen',
+    description: 'Vier Techniken um den Gesprächsfluss zu fördern und Raum für den Patienten zu öffnen.',
+    konzept: [
+      { t: 'Warten', d: 'Bewusstes Warten ist eine Einladung. Der/die Patientin kann in Ruhe darüber nachdenken, ob sie/er noch mehr sagen will. Die Aufmerksamkeit muss auf die/den Patientin ausgerichtet bleiben (Augenkontakt). Pausen länger als 3 Sekunden werden i.d.R. als unangenehm empfunden. Fehlt eine Pause nach einer einfühlsamen Äußerung, wird diese entwertet.' },
+      { t: 'Wiederholen', d: 'Worte wiederholen, die die/der Patient*in gerade geäußert hat. Sinnvoll wenn ein stockender Redefluss wiederbelebt werden soll. Beispiel: Patient: „Mein Mann sagt, ich solle mal mit Ihnen darüber reden, ob das vom Herzen kommen könnte." – Ärztin: „Vom Herzen?"' },
+      { t: 'Spiegeln', d: 'Technik um den Gesprächsraum zu öffnen bzw. offen zu halten. Die Ärztin greift etwas auf, was sie vom Patienten gehört oder wahrgenommen hat. Beispiel: „Und jetzt machen Sie sich Sorgen, dass es etwas Schlimmes sein könnte?" Es wird nur zurückgemeldet, was der Patient eingebracht hat – auf Emotionen und/oder Inhalte.' },
+      { t: 'Zusammenfassen', d: 'Dient der Qualitätskontrolle (habe ich die Patientin richtig verstanden?) und hilft den Gesprächsablauf zu strukturieren. Ermöglicht zu entscheiden, welche Aspekte nun ausführlich behandelt werden sollen.' },
+    ],
+    quelle: 'Rogers CR. Die nicht-direktive Beratung. Frankfurt am Main: Fischer; 1985.',
+    type: 'standard',
+  },
+  'Fragetechniken': {
+    title: 'Fragetechniken',
+    tagline: 'Offen · geschlossen · Katalog · Klärung · W-Fragen',
+    description: 'Verschiedene Fragetypen gezielt einsetzen.',
+    konzept: [
+      { t: 'Geschlossene Fragen', d: 'Fragen auf die mit „Ja", „Nein" oder Jahreszahlen geantwortet werden kann. Oft Suggestiv-, Entscheidungs- oder Alternativfragen.' },
+      { t: 'Offene Fragen', d: 'Erfordern längere Antworten. Beispiel: „Würden Sie bitte erzählen, was passiert ist?" Lässt dem/der Befragten Spielraum.' },
+      { t: 'W-Fragen', d: 'Wann, Was, Wer, Wie, Wo, Wozu/Warum' },
+      { t: 'Katalogfragen', d: 'Beispiel: „Sind die Beschwerden eher morgens oder eher nachts?"' },
+      { t: 'Klärungsfragen', d: 'Beispiel: „Sie sagen, dass Sie Ihre Hochdrucktabletten regelmäßig einnehmen, sich aber wohler fühlen, wenn Sie sie weglassen?"' },
+    ],
+    type: 'standard',
+  },
+  'Ungünstige Fragen': {
+    title: 'Ungünstige Fragen',
+    tagline: 'Suggestiv · Doppel · Überfall · Floskel',
+    description: 'Diese Fragetechniken sollten vermieden werden.',
+    konzept: [
+      { t: 'Suggestivfragen', d: 'Beispiel: „Haben Sie nicht selbst gemerkt, um wie viel besser Sie mit dem neuen Medikament zurechtkommen?"' },
+      { t: 'Doppel-/Mehrfachfragen', d: 'Beispiel: „Haben Sie noch Bauchschmerzen? Oder Übelkeit?"' },
+      { t: 'Überfallfragen', d: 'Beispiel: „Sie haben Durchfall? Das ist bestimmt Stress. Haben Sie schon mal daran gedacht, einen Psychologen zurate zu ziehen?"' },
+      { t: 'Floskeln', d: 'Beispiel: „Wie geht\'s uns denn heute?"' },
+    ],
+    type: 'warning',
+  },
+};
+
+function KommunikationContent({ onNav, onGoToCcg }) {
   const methods = [
     { t: 'WWSZ', sub: 'Warten · Wiederholen · Spiegeln · Zusammenfassen' },
     { t: 'Sanduhrmodell', sub: 'Raum öffnen · fokussieren · Raum öffnen' },
@@ -1397,11 +1448,74 @@ function KommunikationContent({ onNav }) {
   ];
   return (
     <>
+      <button
+        onClick={onGoToCcg}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '12px',
+          width: '100%', background: 'transparent',
+          border: `1px dashed ${C.borderStrong}`, borderRadius: '4px',
+          padding: '12px 14px', cursor: 'pointer', textAlign: 'left',
+          fontFamily: sans, transition: 'all 0.15s', marginBottom: '16px'
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.background = C.blueLight; }}
+        onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.borderStrong; e.currentTarget.style.background = 'transparent'; }}
+      >
+        <BookOpen size={18} color={C.gray} strokeWidth={1.8} style={{ flexShrink: 0 }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>Zur Einordnung der Methoden</div>
+          <div style={{ fontSize: '13px', fontWeight: '600', color: C.blue, marginTop: '1px' }}>Calgary-Cambridge-Guide</div>
+        </div>
+        <ChevronRight size={16} color={C.gray} style={{ flexShrink: 0 }} />
+      </button>
       <SectionLabel text="WERKZEUGKASTEN" />
       {methods.map((m, i) => (
         <MethodCard key={i} title={m.t} sub={m.sub} onClick={() => onNav(m.t)} />
       ))}
     </>
+  );
+}
+
+function KommunikationDetailView({ data, onBack, sectionTitle }) {
+  const isWarning = data.type === 'warning';
+  const accentColor = isWarning ? '#F59E0B' : C.blue;
+  const bgColor = isWarning ? '#FEF3C7' : C.blueLight;
+  const textColor = isWarning ? '#78350F' : C.blue;
+  return (
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 100px' }}>
+        <button onClick={onBack} style={{ background: 'transparent', border: 'none', color: C.blue, fontSize: '13px', cursor: 'pointer', padding: '8px 0', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px', fontFamily: sans, fontWeight: '600' }}>
+          <ChevronLeft size={16} /> {sectionTitle}
+        </button>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '14px' }}>
+          <div style={{ width: '52px', height: '52px', background: C.blue, color: 'white', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', marginTop: '4px' }}>
+            <MessageCircle size={22} color="white" strokeWidth={2} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '16px', height: '3px', background: C.teal }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '10px', color: C.gray, letterSpacing: '1px', fontWeight: '600', marginBottom: '3px' }}>KOMMUNIKATION</div>
+            <h1 style={{ fontSize: '20px', fontWeight: '700', color: C.blue, margin: '0 0 4px 0', letterSpacing: '-0.3px', lineHeight: '1.2' }}>{data.title}</h1>
+            <div style={{ fontSize: '13px', color: C.gray, fontStyle: 'italic' }}>{data.tagline}</div>
+          </div>
+        </div>
+        <div style={{ borderBottom: `1px solid ${C.border}`, marginBottom: '20px' }} />
+        <div style={{ fontSize: '14px', color: C.text, lineHeight: '1.6', marginBottom: '20px' }}>{data.description}</div>
+        {data.konzept && data.konzept.length > 0 && (
+          <div style={{ marginBottom: '22px' }}>
+            {data.konzept.map((k, i) => (
+              <div key={i} style={{ background: bgColor, borderRadius: '2px', borderLeft: `3px solid ${accentColor}`, padding: '12px 14px', marginBottom: '8px' }}>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: textColor, marginBottom: '3px' }}>{k.t}</div>
+                <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.5' }}>{k.d}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {data.quelle && (
+          <div style={{ fontSize: '11px', color: C.textMuted, marginTop: '4px', paddingLeft: '4px', lineHeight: '1.5' }}>
+            <strong>Quelle:</strong> {data.quelle}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
