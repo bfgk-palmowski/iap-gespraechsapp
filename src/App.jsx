@@ -1445,13 +1445,13 @@ const kommunikationData = {
     tagline: 'Gemeinsam klären, was besprochen werden soll.',
     evidenz: 'Studien zeigen: Ärzte unterbrechen Patienten im Schnitt nach 18 Sekunden. Dabei brauchen die meisten Patienten nur ca. 92 Sekunden, um ihr Anliegen vollständig zu schildern. Fehlendes Agenda Setting führt in 24% der Fälle dazu, dass der Arzt das Hauptanliegen nicht versteht. (Langewitz et al., BMJ 2002)',
     description: 'Agenda Setting beschreibt den Prozess, bei dem Patient und Arzt gemeinsam festlegen, welche Themen im Gespräch besprochen werden. Beide Seiten können Themen einbringen, priorisieren und verhandeln. Hat der Arzt bereits eine eigene Agenda, sollte er diese zu Beginn transparent machen – und den Patienten einladen, eigene Anliegen zu ergänzen.',
-    buchmetapher: 'Eine hilfreiche Orientierung bietet die Buchmetapher: Das Gespräch wird wie ein Buch mit Kapiteln geplant. Der Arzt kündigt transparent an, welche Themen er besprechen möchte – und lädt den Patienten ein, eigene Kapitel hinzuzufügen.',
+    buchmetapher: 'Eine hilfreiche Orientierung bietet die **Buchmetapher**: Das Gespräch wird wie ein Buch mit Kapiteln geplant. Der Arzt kündigt transparent an, welche Themen er besprechen möchte – und lädt den Patienten ein, eigene Kapitel hinzuzufügen.',
     formulierungen: [
       '„Was möchten Sie heute besprechen?" · Warten · „Was noch?"',
       '„Ich würde gerne über Ihre Blutwerte sprechen. Gibt es von Ihrer Seite noch etwas, das Sie beschäftigt?"',
       '„Wir haben heute etwa 15 Minuten. Ich schlage vor, wir schauen uns zuerst Ihre neue Beschwerde an – und dann die Medikation. Passt das für Sie?"',
     ],
-    hinweis: 'Agenda Setting ist keine Zeitverschwendung – es spart Zeit, weil Missverständnisse und Late-Presenting-Complaints vermieden werden.',
+    hinweis: 'Agenda Setting spart Zeit – weil Missverständnisse und Late-Presenting-Complaints vermieden werden.',
     hinweisTyp: 'teal',
     type: 'standard',
   },
@@ -1518,6 +1518,10 @@ function KommunikationContent({ onNav, onGoToCcg }) {
     </>
   );
 }
+
+const boldText = (text) => text.split(/\*\*(.*?)\*\*/g).map((part, i) =>
+  i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+);
 
 function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
   const isWarning = data.type === 'warning';
@@ -1588,7 +1592,7 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
         {data.buchmetapher && (
           <div style={{ background: C.tealLight, borderLeft: `4px solid ${C.teal}`, borderRadius: '2px', padding: '14px 16px', marginBottom: '20px' }}>
             <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.teal, fontWeight: '700', marginBottom: '8px' }}>BUCHMETAPHER</div>
-            <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.6', marginBottom: '8px' }}>{data.buchmetapher}</div>
+            <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.6', marginBottom: '8px' }}>{boldText(data.buchmetapher)}</div>
             <div style={{ fontSize: '11px', color: C.gray, fontStyle: 'italic' }}>Didaktische Metapher des IAP, Universität Witten/Herdecke</div>
           </div>
         )}
