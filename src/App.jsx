@@ -405,7 +405,7 @@ export default function App() {
     },
     kommunikation: {
       title: 'Grundlagen der Kommunikation',
-      subtitle: 'WWSZ · Sanduhrmodell · Fragetechniken · Ungünstige Fragen',
+      subtitle: 'WWSZ · Fragetechniken · Sanduhrmodell · Teach-back · Ungünstige Fragen',
       icon: MessageCircle,
       description: 'Der Werkzeugkasten für strukturierte Gespräche.',
       illustration: './img/arzt.png'
@@ -792,6 +792,7 @@ export default function App() {
           data={kommunikationData[subsection]}
           onBack={navigateBack}
           sectionTitle={sec.title}
+          onNav={(t) => navigate('subsection', 'kommunikation', t)}
         />
       );
     }
@@ -1408,6 +1409,7 @@ const kommunikationData = {
       { t: 'Phase 3 – Fokussieren (Mitte)', d: 'Geschlossene/sondierende Fragen zur Anamnese · Überleitungen von Thema zu Thema' },
       { t: 'Phase 4 – Wieder öffnen', d: 'Zusammenfassung: „Ich fasse mal zusammen… richtig?" · Ggf. Teach-back · Plan machen – wie es weiter geht · Offene Frage: „Welche Fragen haben Sie noch?" · „Was ist Ihnen noch wichtig?"' },
     ],
+    konzeptLinks: [{ afterIndex: 3, label: 'Teach-back', nav: 'Teach-back' }],
     hinweis: 'Das Sanduhrmodell dient als Orientierung – nicht als starres Schema. In der Praxis wechseln sich Fragetypen situativ ab.',
     hinweisTyp: 'teal',
     type: 'standard',
@@ -1438,6 +1440,15 @@ const kommunikationData = {
     ],
     type: 'standard',
   },
+  'Teach-back': {
+    title: 'Teach-back',
+    tagline: 'Sicherstellen dass Informationen wirklich angekommen sind.',
+    description: 'Teach-back ist eine Technik zur Verständniskontrolle am Gesprächsende. Der Arzt bittet den Patienten, das Besprochene in eigenen Worten wiederzugeben – nicht um ihn zu testen, sondern um sicherzustellen dass alles richtig angekommen ist.',
+    beispiel: '„Damit ich sicher bin, wie gut ich erklärt habe – können Sie mir kurz sagen, wie Sie das Medikament einnehmen werden?"',
+    hinweis: 'Der entscheidende Kniff: Die Formulierung macht deutlich dass der Arzt sich vergewissert, nicht dass der Patient geprüft wird.',
+    hinweisTyp: 'teal',
+    type: 'standard',
+  },
   'Ungünstige Fragen': {
     title: 'Ungünstige Fragen',
     tagline: 'Suggestiv · Doppel · Überfall · Floskel',
@@ -1455,11 +1466,12 @@ const kommunikationData = {
 function KommunikationContent({ onNav, onGoToCcg }) {
   const methods = [
     { t: 'WWSZ', sub: 'Warten · Wiederholen · Spiegeln · Zusammenfassen' },
-    { t: 'Sanduhrmodell', sub: 'Raum öffnen · fokussieren · Raum öffnen' },
     { t: 'Fragetechniken', sub: 'Offen · geschlossen · Katalog · Klärung · W-Fragen' },
-    { t: 'Ungünstige Fragen', sub: 'Suggestiv · Doppel · Überfall · Floskel' },
+    { t: 'Sanduhrmodell', sub: 'Raum öffnen · fokussieren · Raum öffnen' },
+    { t: 'Teach-back', sub: 'Sicherstellen dass Informationen wirklich angekommen sind' },
     { t: 'Agenda Setting', sub: 'Gemeinsam Prioritäten klären' },
     { t: 'Nonverbale Kommunikation', sub: 'Haltung · Mimik · Gestik · Abstand · Tonfall' },
+    { t: 'Ungünstige Fragen', sub: 'Suggestiv · Doppel · Überfall · Floskel' },
   ];
   return (
     <>
@@ -1492,7 +1504,7 @@ function KommunikationContent({ onNav, onGoToCcg }) {
   );
 }
 
-function KommunikationDetailView({ data, onBack, sectionTitle }) {
+function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
   const isWarning = data.type === 'warning';
   const accentColor = isWarning ? '#F59E0B' : C.blue;
   const bgColor = isWarning ? '#FEF3C7' : C.blueLight;
@@ -1523,12 +1535,33 @@ function KommunikationDetailView({ data, onBack, sectionTitle }) {
         )}
         {data.konzept && data.konzept.length > 0 && (
           <div style={{ marginBottom: '22px' }}>
-            {data.konzept.map((k, i) => (
-              <div key={i} style={{ background: bgColor, borderRadius: '2px', borderLeft: `3px solid ${accentColor}`, padding: '12px 14px', marginBottom: '8px' }}>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: textColor, marginBottom: '3px' }}>{k.t}</div>
-                <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.5' }}>{k.d}</div>
-              </div>
-            ))}
+            {data.konzept.map((k, i) => {
+              const link = data.konzeptLinks && data.konzeptLinks.find(l => l.afterIndex === i);
+              return (
+                <div key={i}>
+                  <div style={{ background: bgColor, borderRadius: '2px', borderLeft: `3px solid ${accentColor}`, padding: '12px 14px', marginBottom: link ? '4px' : '8px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: textColor, marginBottom: '3px' }}>{k.t}</div>
+                    <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.5' }}>{k.d}</div>
+                  </div>
+                  {link && onNav && (
+                    <button onClick={() => onNav(link.nav)} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '5px',
+                      background: 'transparent', border: 'none', cursor: 'pointer',
+                      fontSize: '12px', color: C.teal, fontWeight: '600',
+                      fontFamily: sans, padding: '2px 4px', marginBottom: '8px',
+                      textDecoration: 'underline'
+                    }}>
+                      <ChevronRight size={13} color={C.teal} /> {link.label}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {data.beispiel && (
+          <div style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: '14px', marginBottom: '16px' }}>
+            <div style={{ fontSize: '13px', color: C.text, fontStyle: 'italic', lineHeight: '1.5' }}>{data.beispiel}</div>
           </div>
         )}
         {data.hinweis && (
