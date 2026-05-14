@@ -536,7 +536,7 @@ export default function App() {
                 PRAXISEINSATZ
               </div>
               <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.5' }}>
-                Methoden und Formulierungen für das<br/>ärztliche Gespräch — schnell zur Hand.
+                Methoden und Formulierungen<br/>für das ärztliche Gespräch<br/>— schnell zur Hand.
               </div>
             </div>
             <img 
@@ -1518,14 +1518,7 @@ function KommunikationDetailView({ data, onBack, sectionTitle }) {
         <div style={{ fontSize: '14px', color: C.text, lineHeight: '1.6', marginBottom: '20px' }}>{data.description}</div>
         {data.illustration === 'sanduhr' && (
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-            <svg viewBox="0 0 200 210" width="140" height="147" aria-label="Sanduhrmodell">
-              <polygon points="18,14 182,14 114,88 86,88" fill={C.tealLight} stroke={C.teal} strokeWidth="2.5" strokeLinejoin="round"/>
-              <text x="100" y="52" textAnchor="middle" fontSize="13" fill={C.teal} fontWeight="700" fontFamily="Helvetica Neue, Arial, sans-serif">Öffnen</text>
-              <rect x="84" y="86" width="32" height="38" rx="2" fill={C.teal}/>
-              <text x="100" y="109" textAnchor="middle" fontSize="8" fill="white" fontWeight="700" fontFamily="Helvetica Neue, Arial, sans-serif">Fokus</text>
-              <polygon points="86,124 114,124 182,196 18,196" fill={C.blueLight} stroke={C.blue} strokeWidth="2.5" strokeLinejoin="round"/>
-              <text x="100" y="166" textAnchor="middle" fontSize="13" fill={C.blue} fontWeight="700" fontFamily="Helvetica Neue, Arial, sans-serif">Öffnen</text>
-            </svg>
+            <img src="./img/sanduhr.png" alt="Sanduhrmodell" style={{ maxWidth: '180px', width: '100%', display: 'block' }} />
           </div>
         )}
         {data.konzept && data.konzept.length > 0 && (
