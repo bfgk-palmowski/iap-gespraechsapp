@@ -404,8 +404,8 @@ export default function App() {
       illustration: null
     },
     kommunikation: {
-      title: 'Kommunikation',
-      subtitle: 'WWSZ · Sanduhrmodell · Fragetechniken · Nonverbal',
+      title: 'Grundlagen der Kommunikation',
+      subtitle: 'WWSZ · Sanduhrmodell · Fragetechniken · Ungünstige Fragen',
       icon: MessageCircle,
       description: 'Der Werkzeugkasten für strukturierte Gespräche.',
       illustration: './img/arzt.png'
@@ -570,7 +570,7 @@ export default function App() {
           <div style={{ display: 'grid', gap: '8px' }}>
             {Object.entries(sections).filter(([k]) => k !== 'calgary').map(([key, sec]) => {
               const Icon = sec.icon;
-              const inArbeit = key === 'kommunikation' || key === 'emotionen';
+              const inArbeit = key === 'emotionen';
               return (
                 <button
                   key={key}
@@ -1397,6 +1397,19 @@ function AnamneseContent({ onNav }) {
 }
 
 const kommunikationData = {
+  'Sanduhrmodell': {
+    title: 'Sanduhrmodell',
+    tagline: 'Öffnen · Fokussieren · Wieder öffnen',
+    description: 'Der Gesprächsaufbau folgt dem Prinzip der Sanduhr: Am Anfang öffnen, in der Mitte fokussieren, am Ende wieder öffnen.',
+    konzept: [
+      { t: 'Phase 1 – Öffnen', d: '„Was führt Sie her?" · Warten! · „Welche weiteren Beschwerden gibt es? Was ist noch für Sie wichtig?"' },
+      { t: 'Phase 2 – Fokussieren (Übergang)', d: '„Ich fass mal zusammen, was ich bisher gehört habe… richtig?" (Raum für Ergänzungen) · „Dann werde ich jetzt gezielte Fragen stellen, um die Beschwerden besser einordnen zu können."' },
+      { t: 'Phase 3 – Fokussieren (Mitte)', d: 'Geschlossene/sondierende Fragen zur Anamnese · Überleitungen von Thema zu Thema' },
+      { t: 'Phase 4 – Wieder öffnen', d: '„Zusammenfassung… richtig?" · Ggf. Erklärungen · Plan machen – wie es weiter geht · „Welche Fragen haben Sie noch?" · „Was ist Ihnen noch wichtig? Was noch besprechen?"' },
+    ],
+    hinweis: 'Das Sanduhrmodell dient als Orientierung – nicht als starres Schema. In der Praxis wechseln sich Fragetypen situativ ab.',
+    type: 'standard',
+  },
   'WWSZ': {
     title: 'WWSZ',
     tagline: 'Warten · Wiederholen · Spiegeln · Zusammenfassen',
@@ -1509,8 +1522,18 @@ function KommunikationDetailView({ data, onBack, sectionTitle }) {
             ))}
           </div>
         )}
+        {data.hinweis && (
+          <div style={{
+            background: '#FEF3C7', borderLeft: '4px solid #F59E0B', borderRadius: '2px',
+            padding: '12px 14px', marginTop: '8px',
+            display: 'flex', gap: '10px', alignItems: 'flex-start'
+          }}>
+            <Info size={16} color="#92400E" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div style={{ fontSize: '13px', color: '#78350F', lineHeight: '1.5' }}>{data.hinweis}</div>
+          </div>
+        )}
         {data.quelle && (
-          <div style={{ fontSize: '11px', color: C.textMuted, marginTop: '4px', paddingLeft: '4px', lineHeight: '1.5' }}>
+          <div style={{ fontSize: '11px', color: C.textMuted, marginTop: '12px', paddingLeft: '4px', lineHeight: '1.5' }}>
             <strong>Quelle:</strong> {data.quelle}
           </div>
         )}
