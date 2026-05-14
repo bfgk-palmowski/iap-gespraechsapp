@@ -1369,6 +1369,15 @@ function AnamneseContent({ onNav }) {
           {anamneseHinweis}
         </div>
       </div>
+      <div style={{
+        fontSize: '11px',
+        color: C.textMuted,
+        marginTop: '10px',
+        paddingLeft: '4px',
+        lineHeight: '1.5'
+      }}>
+        <strong>Quelle:</strong> Füeßl HS, Middeke M. <em>Anamnese und klinische Untersuchung.</em> 7. Aufl. Stuttgart: Thieme; 2024.
+      </div>
     </>
   );
 }
