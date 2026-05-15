@@ -1629,6 +1629,7 @@ const boldText = (text) => text.split(/\*\*(.*?)\*\*/g).map((part, i) =>
 function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
   const [checkedItems, setCheckedItems] = useState({});
   const toggleItem = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  const [bildOffen, setBildOffen] = useState(false);
   const isWarning = data.type === 'warning';
   const accentColor = isWarning ? '#F59E0B' : C.blue;
   const bgColor = isWarning ? '#FEF3C7' : C.blueLight;
@@ -1666,11 +1667,22 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
         )}
         {data.bild && (
           <div style={{ marginBottom: '24px' }}>
-            <a href={data.bild.src} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
-              <img src={data.bild.src} alt="" style={{ width: '100%', maxWidth: '100%', borderRadius: '2px', display: 'block', cursor: 'zoom-in' }} />
-            </a>
-            {data.bild.caption && (
-              <div style={{ fontSize: '11px', color: C.gray, marginTop: '6px', lineHeight: '1.5', fontStyle: 'italic' }}>{data.bild.caption}</div>
+            <button
+              onClick={() => setBildOffen(o => !o)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 0', fontFamily: sans, color: C.blue, fontSize: '13px', fontWeight: '600' }}
+            >
+              {bildOffen ? <ChevronRight size={15} color={C.blue} style={{ transform: 'rotate(90deg)', transition: 'transform 0.2s' }} /> : <ChevronRight size={15} color={C.blue} />}
+              Abbildung: Inhalts- und Beziehungsebene
+            </button>
+            {bildOffen && (
+              <div style={{ marginTop: '10px' }}>
+                <a href={data.bild.src} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
+                  <img src={data.bild.src} alt="" style={{ width: '100%', maxWidth: '100%', borderRadius: '2px', display: 'block', cursor: 'zoom-in' }} />
+                </a>
+                {data.bild.caption && (
+                  <div style={{ fontSize: '11px', color: C.gray, marginTop: '6px', lineHeight: '1.5', fontStyle: 'italic' }}>{data.bild.caption}</div>
+                )}
+              </div>
             )}
           </div>
         )}
