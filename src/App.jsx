@@ -676,7 +676,8 @@ export default function App() {
             fontSize: '10px', color: C.gray, textAlign: 'center', lineHeight: '1.5'
           }}>
             IAP · Lehrstuhl für Ausbildung personaler und interpersonaler Kompetenzen<br/>
-            Universität Witten/Herdecke · v0.15.0<br/>
+            Universität Witten/Herdecke ·{' '}
+            <button onClick={() => setView('changelog')} style={{ background: 'transparent', border: 'none', color: C.blue, fontSize: '10px', cursor: 'pointer', textDecoration: 'underline', padding: '0', fontFamily: sans }}>v0.15.0</button><br/>
             <button
               onClick={() => setView('impressum')}
               style={{
@@ -847,6 +848,40 @@ export default function App() {
             <div style={{ fontSize: '13px', color: '#78350F', lineHeight: '1.5' }}>
               <strong>In Arbeit.</strong> Dieser Bereich wird gerade aufgebaut. Die Inhalte erscheinen in einer der nächsten Versionen.
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'changelog') {
+    return (
+      <div style={{ minHeight: '100vh', background: C.bg, fontFamily: sans, color: C.text }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px 20px 80px' }}>
+          <button onClick={() => setView('home')} style={{ background: 'transparent', border: 'none', color: C.blue, fontSize: '13px', cursor: 'pointer', padding: '8px 0', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px', fontFamily: sans, fontWeight: '600' }}>
+            <ChevronLeft size={16} /> Zurück
+          </button>
+          <div style={{ marginBottom: '24px', paddingBottom: '16px', borderBottom: `1px solid ${C.border}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '4px', height: '20px', background: C.teal, borderRadius: '1px' }} />
+              <h1 style={{ fontSize: '22px', fontWeight: '700', color: C.blue, margin: 0 }}>Was ist neu?</h1>
+            </div>
+          </div>
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '13px', fontWeight: '700', color: C.blue, background: C.blueLight, borderRadius: '2px', padding: '3px 10px', letterSpacing: '0.3px' }}>v0.15.0</div>
+            </div>
+            {[
+              'Teach-back: Inhalt erweitert (Konzept, Formulierungen, Checkliste, Evidenz)',
+              'Startseite: Hinweis-Banner gekürzt',
+              'Suchfunktion (Basis) eingebaut',
+              'Footer: Versionsanzeige reaktiviert',
+            ].map((entry, i) => (
+              <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '8px 0', borderBottom: `1px solid ${C.border}` }}>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: C.teal, flexShrink: 0, marginTop: '7px' }} />
+                <div style={{ fontSize: '14px', color: C.text, lineHeight: '1.5' }}>{entry}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
