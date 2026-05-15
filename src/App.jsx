@@ -457,7 +457,7 @@ export default function App() {
           }}>
             <Info size={16} color="#92400E" style={{ flexShrink: 0, marginTop: '2px' }} />
             <div style={{ fontSize: '12.5px', color: '#78350F', lineHeight: '1.55' }}>
-              <strong>Hinweis:</strong> Die App befindet sich in der Entwicklungsphase. Technische oder inhaltliche Fehler sind möglich. Eine Weiterleitung ist nicht gestattet.
+              <strong>Hinweis:</strong> Die App befindet sich in der Entwicklungsphase. Technische oder inhaltliche Fehler sind möglich.
             </div>
           </div>
 
