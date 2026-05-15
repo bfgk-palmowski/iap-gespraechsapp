@@ -565,107 +565,110 @@ export default function App() {
             />
           </div>
 
-          <SectionLabel text="MODULE" />
-
-          <div style={{ display: 'grid', gap: '8px' }}>
-            {Object.entries(sections).filter(([k]) => k !== 'calgary').map(([key, sec]) => {
-              const Icon = sec.icon;
-              const inArbeit = key === 'emotionen';
-              return (
-                <button
-                  key={key}
-                  onClick={() => navigate('section', key)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '14px',
-                    width: '100%', background: C.card,
-                    border: `1px solid ${C.border}`, borderRadius: '4px',
-                    padding: '14px 16px', cursor: 'pointer', textAlign: 'left',
-                    fontFamily: sans, transition: 'all 0.15s'
-                  }}
-                  onMouseEnter={(e) => { 
-                    e.currentTarget.style.borderColor = inArbeit ? '#F59E0B' : C.blue; 
-                    e.currentTarget.style.background = inArbeit ? '#FFFBEB' : C.blueLight;
-                  }}
-                  onMouseLeave={(e) => { 
-                    e.currentTarget.style.borderColor = C.border; 
-                    e.currentTarget.style.background = C.card;
-                  }}
-                >
-                  <div style={{
-                    width: '40px', height: '40px',
-                    background: inArbeit ? C.gray : C.blue,
-                    borderRadius: '2px', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                    position: 'relative'
-                  }}>
-                    <Icon size={18} color="white" strokeWidth={2} />
-                    <div style={{ 
-                      position: 'absolute', bottom: 0, left: 0,
-                      width: '12px', height: '3px',
-                      background: inArbeit ? '#C4B8A4' : C.teal
-                    }} />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ 
-                      fontSize: '15px', fontWeight: '600',
-                      color: inArbeit ? C.gray : C.blue,
-                      marginBottom: '2px', letterSpacing: '-0.1px'
-                    }}>{sec.title}</div>
-                    <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>
-                      {sec.subtitle}
-                    </div>
-                  </div>
-                  {inArbeit ? (
-                    <div style={{
-                      fontSize: '10px', fontWeight: '700',
-                      color: '#92400E', background: '#FEF3C7',
-                      border: '1px solid #F59E0B',
-                      borderRadius: '2px', padding: '3px 7px',
-                      letterSpacing: '0.5px', flexShrink: 0,
-                      whiteSpace: 'nowrap'
-                    }}>In Arbeit</div>
-                  ) : (
-                    <ChevronRight size={18} color={C.gray} style={{ flexShrink: 0 }} />
-                  )}
-                </button>
+          {(() => {
+            const q = search.trim().toLowerCase();
+            if (q.length >= 2) {
+              const index = [
+                ...Object.entries(sections).map(([key, sec]) => ({
+                  label: sec.title, sub: sec.subtitle, crumb: 'Modul',
+                  go: () => navigate('section', key),
+                })),
+                ...Object.entries(anamneseData).map(([key, d]) => ({
+                  label: d.title, sub: d.tagline, crumb: 'Anamnese',
+                  go: () => navigate('subsection', 'anamnese', key),
+                })),
+                ...Object.entries(kommunikationData).map(([key, d]) => ({
+                  label: d.title, sub: d.tagline, crumb: 'Grundlagen der Kommunikation',
+                  go: () => navigate('subsection', 'kommunikation', key),
+                })),
+                ...Object.entries(feedbackData).map(([key, d]) => ({
+                  label: d.title, sub: d.tagline, crumb: 'Teamkompetenz & Feedback',
+                  go: () => navigate('subsection', 'feedback', key),
+                })),
+              ];
+              const results = index.filter(item =>
+                (item.label + ' ' + (item.sub || '')).toLowerCase().includes(q)
               );
-            })}
-          </div>
-
-          <div style={{
-            marginTop: '24px', paddingTop: '20px',
-            borderTop: `1px solid ${C.border}`
-          }}>
-            <button
-              onClick={() => navigate('section', 'calgary')}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '12px',
-                width: '100%', background: 'transparent',
-                border: `1px dashed ${C.borderStrong}`, borderRadius: '4px',
-                padding: '12px 14px', cursor: 'pointer', textAlign: 'left',
-                fontFamily: sans, transition: 'all 0.15s'
-              }}
-              onMouseEnter={(e) => { 
-                e.currentTarget.style.borderColor = C.blue; 
-                e.currentTarget.style.background = C.blueLight;
-              }}
-              onMouseLeave={(e) => { 
-                e.currentTarget.style.borderColor = C.borderStrong; 
-                e.currentTarget.style.background = 'transparent';
-              }}
-            >
-              <BookOpen size={18} color={C.gray} strokeWidth={1.8} style={{ flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>
-                  Zur Einordnung aller Methoden
+              return (
+                <div>
+                  {results.length === 0 ? (
+                    <div style={{ fontSize: '13px', color: C.gray, padding: '8px 0 20px' }}>
+                      Kein Ergebnis für „{search.trim()}"
+                    </div>
+                  ) : (
+                    <>
+                      <SectionLabel text={`${results.length} ERGEBNIS${results.length !== 1 ? 'SE' : ''}`} />
+                      <div style={{ display: 'grid', gap: '8px' }}>
+                        {results.map((item, i) => (
+                          <button key={i} onClick={() => { setSearch(''); item.go(); }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: '4px', padding: '12px 16px', cursor: 'pointer', textAlign: 'left', fontFamily: sans, transition: 'all 0.15s' }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.background = C.blueLight; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.card; }}
+                          >
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: '14px', fontWeight: '600', color: C.blue, marginBottom: '2px' }}>{item.label}</div>
+                              {item.sub && <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>{item.sub}</div>}
+                              <div style={{ fontSize: '11px', color: C.textMuted, marginTop: '3px' }}>{item.crumb}</div>
+                            </div>
+                            <ChevronRight size={16} color={C.gray} style={{ flexShrink: 0 }} />
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: C.blue, marginTop: '1px' }}>
-                  Calgary-Cambridge-Guide
+              );
+            }
+            return (
+              <>
+                <SectionLabel text="MODULE" />
+                <div style={{ display: 'grid', gap: '8px' }}>
+                  {Object.entries(sections).filter(([k]) => k !== 'calgary').map(([key, sec]) => {
+                    const Icon = sec.icon;
+                    const inArbeit = key === 'emotionen';
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => navigate('section', key)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: '4px', padding: '14px 16px', cursor: 'pointer', textAlign: 'left', fontFamily: sans, transition: 'all 0.15s' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = inArbeit ? '#F59E0B' : C.blue; e.currentTarget.style.background = inArbeit ? '#FFFBEB' : C.blueLight; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.card; }}
+                      >
+                        <div style={{ width: '40px', height: '40px', background: inArbeit ? C.gray : C.blue, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+                          <Icon size={18} color="white" strokeWidth={2} />
+                          <div style={{ position: 'absolute', bottom: 0, left: 0, width: '12px', height: '3px', background: inArbeit ? '#C4B8A4' : C.teal }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '15px', fontWeight: '600', color: inArbeit ? C.gray : C.blue, marginBottom: '2px', letterSpacing: '-0.1px' }}>{sec.title}</div>
+                          <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>{sec.subtitle}</div>
+                        </div>
+                        {inArbeit ? (
+                          <div style={{ fontSize: '10px', fontWeight: '700', color: '#92400E', background: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: '2px', padding: '3px 7px', letterSpacing: '0.5px', flexShrink: 0, whiteSpace: 'nowrap' }}>In Arbeit</div>
+                        ) : (
+                          <ChevronRight size={18} color={C.gray} style={{ flexShrink: 0 }} />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
-              <ChevronRight size={16} color={C.gray} style={{ flexShrink: 0 }} />
-            </button>
-          </div>
+                <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: `1px solid ${C.border}` }}>
+                  <button
+                    onClick={() => navigate('section', 'calgary')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', background: 'transparent', border: `1px dashed ${C.borderStrong}`, borderRadius: '4px', padding: '12px 14px', cursor: 'pointer', textAlign: 'left', fontFamily: sans, transition: 'all 0.15s' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.background = C.blueLight; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.borderStrong; e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <BookOpen size={18} color={C.gray} strokeWidth={1.8} style={{ flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '12px', color: C.gray, lineHeight: '1.4' }}>Zur Einordnung aller Methoden</div>
+                      <div style={{ fontSize: '13px', fontWeight: '600', color: C.blue, marginTop: '1px' }}>Calgary-Cambridge-Guide</div>
+                    </div>
+                    <ChevronRight size={16} color={C.gray} style={{ flexShrink: 0 }} />
+                  </button>
+                </div>
+              </>
+            );
+          })()}
 
           <div style={{
             marginTop: '44px', paddingTop: '16px',
