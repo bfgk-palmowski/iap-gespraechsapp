@@ -1536,6 +1536,7 @@ const kommunikationData = {
     tagline: 'Signale jenseits des gesprochenen Wortes',
     description: 'Neben dem gesprochenen Wort senden wir im Gespräch ständig nonverbale Signale – meist unbewusst. Sie transportieren Informationen auf der Beziehungsebene und verraten, wie etwas gemeint ist: ernst, witzig oder verärgert. Der Körper drückt aus, was in unserem Kopf passiert.',
     hinweisVorKonzept: 'Der entscheidende Unterschied: Nonverbale Signale sind schwerer zu kontrollieren als Worte – und wirken daher authentischer. Für Ärzt*innen besonders wichtig: Sie zeigen, ob ein Patient ängstlich ist oder sich unwohl fühlt.',
+    bild: { src: './img/nonverbKomm.png', caption: 'Quelle: Birkenbihl, Vera F. (2017): Signale des Körpers. Mvg, München, S. 18' },
     konzeptLabel: 'KATEGORIEN NONVERBALER SIGNALE',
     konzept: [
       { t: 'Mimik', d: 'Gesichtszüge, Augenkontakt, Blickrichtung, Kopfbewegungen (Nicken, Schütteln) sowie physiologische Reaktionen (erröten, erblassen). Gesichtsmuskeln sind schwer zu kontrollieren – Mimik ist daher besonders authentisch.' },
@@ -1661,6 +1662,16 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
           <div style={{ background: C.blueLight, borderLeft: `4px solid ${C.blue}`, borderRadius: '2px', padding: '12px 14px', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
             <Info size={16} color={C.blue} style={{ flexShrink: 0, marginTop: '2px' }} />
             <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.55' }}>{data.hinweisVorKonzept}</div>
+          </div>
+        )}
+        {data.bild && (
+          <div style={{ marginBottom: '24px' }}>
+            <a href={data.bild.src} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
+              <img src={data.bild.src} alt="" style={{ width: '100%', maxWidth: '100%', borderRadius: '2px', display: 'block', cursor: 'zoom-in' }} />
+            </a>
+            {data.bild.caption && (
+              <div style={{ fontSize: '11px', color: C.gray, marginTop: '6px', lineHeight: '1.5', fontStyle: 'italic' }}>{data.bild.caption}</div>
+            )}
           </div>
         )}
         {data.illustration === 'sanduhr' && (
