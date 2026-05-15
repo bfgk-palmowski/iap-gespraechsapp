@@ -1531,6 +1531,41 @@ const kommunikationData = {
     hinweisTyp: 'teal',
     type: 'standard',
   },
+  'Nonverbale Kommunikation': {
+    title: 'Nonverbale Kommunikation',
+    tagline: 'Signale jenseits des gesprochenen Wortes',
+    description: 'Neben dem gesprochenen Wort senden wir im Gespräch ständig nonverbale Signale – meist unbewusst. Sie transportieren Informationen auf der Beziehungsebene und verraten, wie etwas gemeint ist: ernst, witzig oder verärgert. Der Körper drückt aus, was in unserem Kopf passiert.',
+    hinweisVorKonzept: 'Der entscheidende Unterschied: Nonverbale Signale sind schwerer zu kontrollieren als Worte – und wirken daher authentischer. Für Ärzt*innen besonders wichtig: Sie zeigen, ob ein Patient ängstlich ist oder sich unwohl fühlt.',
+    konzeptLabel: 'KATEGORIEN NONVERBALER SIGNALE',
+    konzept: [
+      { t: 'Mimik', d: 'Gesichtszüge, Augenkontakt, Blickrichtung, Kopfbewegungen (Nicken, Schütteln) sowie physiologische Reaktionen (erröten, erblassen). Gesichtsmuskeln sind schwer zu kontrollieren – Mimik ist daher besonders authentisch.' },
+      { t: 'Gestik', d: 'Bewegungen der Hände und Arme. Wichtige Unterscheidung: Beruhigungsgesten (Nacken berühren, Stirn reiben) vs. Abwehrgesten (Blick abwenden, Hände vors Gesicht, weglehnen).' },
+      { t: 'Haltung', d: 'Körperposition und -bewegung. Aufrecht sitzen = aufmerksam; zurückgelehnt = entspannt oder gelangweilt; nach vorne gebeugt = möchte weg. Verschränkte vs. offene Arme sind weitere Schlüsselsignale.' },
+      { t: 'Proxemik', d: 'Abstand und Position im Raum. Vier Zonen: Intimzone, persönliche, soziale und öffentliche Zone. Plötzliche Distanzveränderungen sind besonders aussagekräftig.' },
+      { t: 'Stimmliche Begleitelemente', d: 'Tonfall, Stimmlage, Lautstärke, Sprechpausen, Betonung, Sprachmelodie sowie Lautäußerungen (Seufzen, Stöhnen, „Mhm").' },
+    ],
+    hinweisNachKonzept: 'Einzelne Signale haben wenig Aussagekraft. Entscheidend sind Kontext, das Zusammenspiel mehrerer Signale und plötzliche Verhaltensänderungen.',
+    formulierungenLabel: 'TIPPS ZUR ANWENDUNG',
+    formulierungen: [
+      'Beim Berühren immer beachten: Jede Berührung bedeutet das Eintreten in die Intimzone – auf Abstandssignale achten und ggf. um Erlaubnis bitten.',
+      'Gesprächsatmosphäre aktiv gestalten: Lächeln, Blickkontakt auf Augenhöhe, zugewandte Haltung und eine ruhige, empathische innere Haltung.',
+    ],
+    checklistLabel: 'CHECKLISTE – EIGENE SIGNALE',
+    checklist: [
+      'Blickkontakt: Sehe ich mein Gegenüber aufmerksam an?',
+      'Haltung: Offen oder geschlossen?',
+      'Gestik: Kongruent zum Inhalt des Gesagten?',
+      'Stimme: Ruhig, tief, langsam – nicht zu schnell?',
+      'Mimik: Signalisiere ich Missmut oder Ungeduld, ohne es zu merken?',
+      'Körpersprache des Patienten: Stimmen analoge und digitale Signale überein?',
+    ],
+    refs: [
+      { text: 'NURSE-Modell', loc: 'Umgang mit Emotionen' },
+      { text: 'WWSZ', loc: 'Grundlagen der Kommunikation', nav: 'WWSZ' },
+    ],
+    quelle: 'Angelehnt an: Birkenbihl, Vera F. (2017): Signale des Körpers. mvg, München.',
+    type: 'standard',
+  },
   'Ungünstige Fragen': {
     title: 'Ungünstige Fragen',
     tagline: 'Suggestiv · Doppel · Überfall · Floskel',
@@ -1552,7 +1587,7 @@ function KommunikationContent({ onNav, onGoToCcg }) {
     { t: 'Sanduhrmodell', sub: 'Raum öffnen · fokussieren · Raum öffnen' },
     { t: 'Teach-back', sub: 'Sicherstellen dass Informationen wirklich angekommen sind' },
     { t: 'Agenda Setting', sub: 'Gemeinsam Prioritäten klären' },
-    { t: 'Nonverbale Kommunikation', sub: 'Haltung · Mimik · Gestik · Abstand · Tonfall' },
+    { t: 'Nonverbale Kommunikation', sub: 'Signale jenseits des gesprochenen Wortes' },
     { t: 'Ungünstige Fragen', sub: 'Suggestiv · Doppel · Überfall · Floskel' },
   ];
   return (
@@ -1622,13 +1657,20 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
           </div>
         )}
         <div style={{ fontSize: '14px', color: C.text, lineHeight: '1.6', marginBottom: '20px' }}>{data.description}</div>
+        {data.hinweisVorKonzept && (
+          <div style={{ background: C.blueLight, borderLeft: `4px solid ${C.blue}`, borderRadius: '2px', padding: '12px 14px', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+            <Info size={16} color={C.blue} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.55' }}>{data.hinweisVorKonzept}</div>
+          </div>
+        )}
         {data.illustration === 'sanduhr' && (
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
             <img src="./img/sanduhr.png" alt="Sanduhrmodell" style={{ maxWidth: '180px', width: '100%', display: 'block' }} />
           </div>
         )}
         {data.konzept && data.konzept.length > 0 && (
-          <div style={{ marginBottom: '22px' }}>
+          <div style={{ marginBottom: '8px' }}>
+            {data.konzeptLabel && <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '10px' }}>{data.konzeptLabel}</div>}
             {data.konzept.map((k, i) => {
               const link = data.konzeptLinks && data.konzeptLinks.find(l => l.afterIndex === i);
               return (
@@ -1653,6 +1695,11 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
             })}
           </div>
         )}
+        {data.hinweisNachKonzept && (
+          <div style={{ borderLeft: `3px solid ${C.border}`, paddingLeft: '14px', marginBottom: '20px', marginTop: '4px' }}>
+            <div style={{ fontSize: '12.5px', color: C.gray, fontStyle: 'italic', lineHeight: '1.55' }}>{data.hinweisNachKonzept}</div>
+          </div>
+        )}
         {data.beispiel && (
           <div style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: '14px', marginBottom: '16px' }}>
             <div style={{ fontSize: '13px', color: C.text, fontStyle: 'italic', lineHeight: '1.5' }}>{data.beispiel}</div>
@@ -1667,7 +1714,7 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
         )}
         {data.formulierungen && data.formulierungen.length > 0 && (
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '10px' }}>FORMULIERUNGEN</div>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '10px' }}>{data.formulierungenLabel || 'FORMULIERUNGEN'}</div>
             <div style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: '14px' }}>
               {data.formulierungen.map((f, i) => {
                 const text = typeof f === 'string' ? f : f.text;
@@ -1684,7 +1731,7 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
         )}
         {data.checklist && data.checklist.length > 0 && (
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>CHECKLISTE</div>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>{data.checklistLabel || 'CHECKLISTE'}</div>
             {data.checklist.map((item, i) => {
               const id = `kd-${data.title}-${i}`;
               const checked = !!checkedItems[id];
