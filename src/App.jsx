@@ -1459,7 +1459,36 @@ const kommunikationData = {
     title: 'Teach-back',
     tagline: 'Sicherstellen dass Informationen wirklich angekommen sind.',
     description: 'Teach-back ist eine Technik zur Verständniskontrolle am Gesprächsende. Der Arzt bittet den Patienten, das Besprochene in eigenen Worten wiederzugeben – nicht um ihn zu testen, sondern um sicherzustellen dass alles richtig angekommen ist.',
-    beispiel: '„Damit ich sicher bin, wie gut ich erklärt habe – können Sie mir kurz sagen, wie Sie das Medikament einnehmen werden?"',
+    konzept: [
+      { t: 'Fokussieren', d: 'Welche 1–3 Kernbotschaften sind wirklich wichtig? Weniger ist mehr – je mehr Informationen, desto weniger wird erinnert.' },
+      { t: 'Einschätzen', d: 'Vorwissen und Gesundheitskompetenz des Patienten kurz erfragen. Sprache und Tempo entsprechend anpassen.' },
+      { t: 'Erklären', d: 'Informationen in kleinen Einheiten vermitteln (Chunk & Check). Nicht alles auf einmal – nach jeder Einheit kurz prüfen.' },
+      { t: 'Teach-back einholen', d: 'Den Patienten einladen, das Gehörte in eigenen Worten wiederzugeben. Formulierung so wählen, dass keine Prüfungssituation entsteht.' },
+      { t: 'Korrigieren & bestätigen', d: 'Missverstandenes sofort richtigstellen – mit anderen Worten als beim ersten Versuch. Richtiges explizit bestätigen.' },
+    ],
+    formulierungen: [
+      '„Damit ich sicher bin, wie gut ich das erklärt habe – können Sie mir kurz sagen, wie Sie das Medikament einnehmen werden?"',
+      '„Wir haben heute einiges besprochen. Was würden Sie Ihrer Familie heute Abend erzählen, was Sie erfahren haben?"',
+      '„Ich möchte sichergehen, dass ich mich verständlich ausgedrückt habe – was nehmen Sie als wichtigsten Punkt mit?"',
+      { text: '„Können Sie mir zeigen, wie Sie den Inhalator benutzen würden?"', note: 'Für motorische Fertigkeiten: zeigen lassen statt erklären lassen.' },
+    ],
+    checklist: [
+      'Maximal 3 Kernbotschaften pro Gesprächsabschnitt',
+      'Formulierung signalisiert: Arzt prüft sich selbst, nicht den Patienten',
+      'Bei Unverständnis: andere Worte wählen, nicht wiederholen',
+      'Bei praktischen Fertigkeiten: demonstrieren lassen',
+      'Hochrisiko-Situationen priorisieren (neue Medikamente, Entlassung, Dosisänderungen)',
+    ],
+    evidenz: 'Systematische Reviews (Ha Dinh et al. 2016; Talevski et al. 2020) zeigen konsistent verbesserte Ergebnisse für Medikamentenadhärenz, Krankheitswissen und Patientensicherheit. 95 % der eingeschlossenen Studien berichten positive Primäroutcomes. Geübte Anwender berichten einen Mehraufwand von ca. 1 Minute pro Konsultation.',
+    evidenzLinks: [
+      { text: 'Ha Dinh et al. (2016)', href: 'https://pubmed.ncbi.nlm.nih.gov/26878928/' },
+      { text: 'Talevski et al. (2020)', href: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7156054/' },
+    ],
+    refs: [
+      { text: 'Fragetechniken', loc: 'Grundlagen der Kommunikation', nav: 'Fragetechniken' },
+      { text: 'Sanduhrmodell', loc: 'Grundlagen der Kommunikation', nav: 'Sanduhrmodell' },
+      { text: 'WWSZ', loc: 'Grundlagen der Kommunikation', nav: 'WWSZ' },
+    ],
     hinweis: 'Der entscheidende Kniff: Die Formulierung macht deutlich dass der Arzt sich vergewissert, nicht dass der Patient geprüft wird.',
     hinweisTyp: 'teal',
     type: 'standard',
@@ -1524,6 +1553,8 @@ const boldText = (text) => text.split(/\*\*(.*?)\*\*/g).map((part, i) =>
 );
 
 function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
+  const [checkedItems, setCheckedItems] = useState({});
+  const toggleItem = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   const isWarning = data.type === 'warning';
   const accentColor = isWarning ? '#F59E0B' : C.blue;
   const bgColor = isWarning ? '#FEF3C7' : C.blueLight;
@@ -1598,26 +1629,78 @@ function KommunikationDetailView({ data, onBack, sectionTitle, onNav }) {
         )}
         {data.formulierungen && data.formulierungen.length > 0 && (
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '10px' }}>BEISPIEL-FORMULIERUNGEN</div>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '10px' }}>FORMULIERUNGEN</div>
             <div style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: '14px' }}>
-              {data.formulierungen.map((f, i) => (
-                <div key={i} style={{ fontSize: '13px', color: C.text, fontStyle: 'italic', lineHeight: '1.5', marginBottom: i < data.formulierungen.length - 1 ? '10px' : '0' }}>{f}</div>
-              ))}
+              {data.formulierungen.map((f, i) => {
+                const text = typeof f === 'string' ? f : f.text;
+                const note = typeof f === 'object' ? f.note : null;
+                return (
+                  <div key={i} style={{ marginBottom: i < data.formulierungen.length - 1 ? '12px' : '0' }}>
+                    <div style={{ fontSize: '13px', color: C.text, fontStyle: 'italic', lineHeight: '1.5' }}>{text}</div>
+                    {note && <div style={{ fontSize: '11.5px', color: C.gray, fontStyle: 'italic', marginTop: '3px' }}>{note}</div>}
+                  </div>
+                );
+              })}
             </div>
+          </div>
+        )}
+        {data.checklist && data.checklist.length > 0 && (
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>CHECKLISTE</div>
+            {data.checklist.map((item, i) => {
+              const id = `kd-${data.title}-${i}`;
+              const checked = !!checkedItems[id];
+              return (
+                <div key={i} onClick={() => toggleItem(id)} style={{ display: 'flex', gap: '10px', padding: '8px 0', cursor: 'pointer', alignItems: 'flex-start', opacity: checked ? 0.55 : 1 }}>
+                  <div style={{ marginTop: '1px', flexShrink: 0 }}>
+                    {checked ? <Check size={16} color={C.teal} strokeWidth={2.5} /> : <Circle size={15} color={C.borderStrong} />}
+                  </div>
+                  <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.5', textDecoration: checked ? 'line-through' : 'none' }}>{item}</div>
+                </div>
+              );
+            })}
           </div>
         )}
         {data.hinweis && (
           data.hinweisTyp === 'teal' ? (
-            <div style={{ background: C.tealLight, borderLeft: `4px solid ${C.teal}`, borderRadius: '2px', padding: '12px 14px', marginTop: '8px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+            <div style={{ background: C.tealLight, borderLeft: `4px solid ${C.teal}`, borderRadius: '2px', padding: '12px 14px', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <Info size={16} color={C.teal} style={{ flexShrink: 0, marginTop: '2px' }} />
               <div style={{ fontSize: '13px', color: C.grayDark, lineHeight: '1.5' }}>{data.hinweis}</div>
             </div>
           ) : (
-            <div style={{ background: '#FEF3C7', borderLeft: '4px solid #F59E0B', borderRadius: '2px', padding: '12px 14px', marginTop: '8px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+            <div style={{ background: '#FEF3C7', borderLeft: '4px solid #F59E0B', borderRadius: '2px', padding: '12px 14px', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <Info size={16} color="#92400E" style={{ flexShrink: 0, marginTop: '2px' }} />
               <div style={{ fontSize: '13px', color: '#78350F', lineHeight: '1.5' }}>{data.hinweis}</div>
             </div>
           )
+        )}
+        {data.evidenzLinks && data.evidenzLinks.length > 0 && (
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ fontSize: '11px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '8px' }}>HINTERGRUND & EVIDENZ</div>
+            <div style={{ background: C.blueLight, borderLeft: `4px solid ${C.blue}`, borderRadius: '2px', padding: '12px 14px' }}>
+              <div style={{ fontSize: '13px', color: C.text, lineHeight: '1.55', marginBottom: '10px' }}>{data.evidenz}</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {data.evidenzLinks.map((l, i) => (
+                  <a key={i} href={l.href} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: '12px', color: C.blue, fontWeight: '600', textDecoration: 'underline' }}>
+                    {l.text}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {data.refs && data.refs.length > 0 && (
+          <div style={{ background: C.blueLight, borderRadius: '2px', borderLeft: `3px solid ${C.blue}`, padding: '12px 14px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '1.5px', color: C.blue, fontWeight: '700', marginBottom: '6px' }}>VERWANDTE METHODEN</div>
+            {data.refs.map((ref, i) => (
+              <div key={i} onClick={() => ref.nav && onNav && onNav(ref.nav)}
+                style={{ fontSize: '12px', color: C.text, lineHeight: '1.5', marginBottom: i < data.refs.length - 1 ? '3px' : '0', cursor: ref.nav ? 'pointer' : 'default' }}>
+                <strong style={{ color: C.blue }}>{ref.text}</strong>
+                <span style={{ color: C.gray }}> · in {ref.loc}</span>
+              </div>
+            ))}
+          </div>
         )}
         {data.quelle && (
           <div style={{ fontSize: '11px', color: C.textMuted, marginTop: '12px', paddingLeft: '4px', lineHeight: '1.5' }}>
