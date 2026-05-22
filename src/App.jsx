@@ -687,7 +687,18 @@ export default function App() {
                 fontFamily: sans, marginTop: '4px'
               }}
             >Impressum</button>
+            <br/>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('openFeedback'))}
+              style={{
+                background: 'transparent', border: 'none',
+                color: C.teal, fontSize: '10px', cursor: 'pointer',
+                padding: '4px 0', fontFamily: sans, marginTop: '2px',
+                display: 'inline-block',
+              }}
+            >📝 Feedback erwünscht – Hilf uns die App zu verbessern</button>
           </div>
+          <FeedbackWidget />
         </div>
       </div>
     );
@@ -760,6 +771,7 @@ export default function App() {
           {section === 'feedback' && <FeedbackContent onNav={(t) => navigate('subsection', 'feedback', t)} />}
           {section === 'kommunikation' && <KommunikationContent onNav={(t) => navigate('subsection', 'kommunikation', t)} onGoToCcg={() => navigate('section', 'calgary')} />}
           {section === 'emotionen' && <EmotionenContent onNav={(t) => navigate('subsection', 'emotionen', t)} />}
+          <FeedbackWidget />
         </div>
       </div>
     );
@@ -771,33 +783,42 @@ export default function App() {
     // Anamnese-Stufen: echte Inhalte
     if (section === 'anamnese' && anamneseData[subsection]) {
       return (
-        <AnamneseDetailView 
-          data={anamneseData[subsection]} 
-          stepNum={subsection}
-          onBack={navigateBack}
-          sectionTitle={sec.title}
-        />
+        <>
+          <AnamneseDetailView
+            data={anamneseData[subsection]}
+            stepNum={subsection}
+            onBack={navigateBack}
+            sectionTitle={sec.title}
+          />
+          <FeedbackWidget />
+        </>
       );
     }
-    
+
     if (section === 'feedback' && feedbackData[subsection]) {
       return (
-        <FeedbackDetailView
-          data={feedbackData[subsection]}
-          onBack={navigateBack}
-          sectionTitle={sec.title}
-        />
+        <>
+          <FeedbackDetailView
+            data={feedbackData[subsection]}
+            onBack={navigateBack}
+            sectionTitle={sec.title}
+          />
+          <FeedbackWidget />
+        </>
       );
     }
 
     if (section === 'kommunikation' && kommunikationData[subsection]) {
       return (
-        <KommunikationDetailView
-          data={kommunikationData[subsection]}
-          onBack={navigateBack}
-          sectionTitle={sec.title}
-          onNav={(t) => navigate('subsection', 'kommunikation', t)}
-        />
+        <>
+          <KommunikationDetailView
+            data={kommunikationData[subsection]}
+            onBack={navigateBack}
+            sectionTitle={sec.title}
+            onNav={(t) => navigate('subsection', 'kommunikation', t)}
+          />
+          <FeedbackWidget />
+        </>
       );
     }
 
@@ -849,6 +870,7 @@ export default function App() {
               <strong>In Arbeit.</strong> Dieser Bereich wird gerade aufgebaut. Die Inhalte erscheinen in einer der nächsten Versionen.
             </div>
           </div>
+          <FeedbackWidget />
         </div>
       </div>
     );
@@ -883,6 +905,7 @@ export default function App() {
               </div>
             ))}
           </div>
+          <FeedbackWidget />
         </div>
       </div>
     );
@@ -940,6 +963,7 @@ export default function App() {
               </a>
             </div>
           </div>
+          <FeedbackWidget />
         </div>
       </div>
     );
@@ -2574,5 +2598,293 @@ function FeedbackDetailView({ data, onBack, sectionTitle }) {
         )}
       </div>
     </div>
+  );
+}
+
+// ========== Feedback-Widget (schwebender Button + Modal) ==========
+function FeedbackWidget() {
+  const [open, setOpen] = useState(false);
+  const [hilfreich, setHilfreich] = useState('');
+  const [fehlt, setFehlt] = useState('');
+  const [nervt, setNervt] = useState('');
+  const [bewertung, setBewertung] = useState(0);
+  const [hoverStar, setHoverStar] = useState(0);
+  const [email, setEmail] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener('openFeedback', handler);
+    return () => window.removeEventListener('openFeedback', handler);
+  }, []);
+
+  const handleClose = () => {
+    setOpen(false);
+    if (sent) {
+      setTimeout(() => {
+        setHilfreich(''); setFehlt(''); setNervt('');
+        setBewertung(0); setEmail('');
+        setSent(false); setError(null);
+      }, 400);
+    }
+  };
+
+  const handleSend = async () => {
+    setSending(true);
+    setError(null);
+    try {
+      const res = await fetch('https://palmowski.net/feedback/feedback.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hilfreich, fehlt, nervt, bewertung, email }),
+      });
+      if (res.ok) {
+        setSent(true);
+      } else {
+        setError('Beim Senden ist ein Fehler aufgetreten. Bitte versuche es erneut.');
+      }
+    } catch {
+      setError('Keine Verbindung möglich. Bitte überprüfe deine Internetverbindung.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const inputStyle = {
+    width: '100%', boxSizing: 'border-box',
+    border: `1px solid ${C.border}`, borderRadius: '4px',
+    padding: '10px 12px', fontSize: '13px', fontFamily: sans,
+    color: C.text, outline: 'none', lineHeight: '1.5',
+    background: 'white',
+  };
+
+  const labelStyle = {
+    display: 'block', fontSize: '11px', fontWeight: '700',
+    color: C.blue, letterSpacing: '1px', marginBottom: '6px',
+    fontFamily: sans,
+  };
+
+  return (
+    <>
+      {/* ── Schwebender Button ── */}
+      <button
+        onClick={() => setOpen(true)}
+        title="Feedback geben"
+        style={{
+          position: 'fixed', bottom: '20px', right: '20px',
+          width: '52px', height: '52px', borderRadius: '50%',
+          background: C.teal, border: 'none', cursor: 'pointer',
+          fontSize: '22px', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', zIndex: 900,
+          boxShadow: '0 4px 14px rgba(45,184,197,0.45)',
+          transition: 'transform 0.15s, box-shadow 0.15s',
+          fontFamily: sans,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.1)';
+          e.currentTarget.style.boxShadow = '0 6px 20px rgba(45,184,197,0.6)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 14px rgba(45,184,197,0.45)';
+        }}
+      >
+        📝
+      </button>
+
+      {/* ── Modal-Overlay ── */}
+      {open && (
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.52)', zIndex: 1000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '16px',
+          }}
+        >
+          <div style={{
+            background: 'white', borderRadius: '8px', padding: '24px',
+            width: '100%', maxWidth: '480px', maxHeight: '90vh',
+            overflowY: 'auto', position: 'relative',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            fontFamily: sans,
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '4px', height: '22px', background: C.teal, borderRadius: '2px' }} />
+                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: C.blue, fontFamily: sans }}>
+                  Feedback geben
+                </h2>
+              </div>
+              <button
+                onClick={handleClose}
+                style={{
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  color: C.gray, fontSize: '18px', lineHeight: 1,
+                  padding: '4px 6px', borderRadius: '4px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: sans,
+                }}
+              >✕</button>
+            </div>
+
+            {sent ? (
+              /* ── Erfolgsmeldung ── */
+              <div style={{ textAlign: 'center', padding: '16px 0 8px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '14px' }}>🎉</div>
+                <div style={{ fontSize: '18px', fontWeight: '700', color: C.blue, marginBottom: '8px', fontFamily: sans }}>
+                  Danke für dein Feedback!
+                </div>
+                <div style={{ fontSize: '13px', color: C.gray, lineHeight: '1.6', fontFamily: sans }}>
+                  Deine Rückmeldung hilft uns, die App kontinuierlich zu verbessern.
+                </div>
+                <button
+                  onClick={handleClose}
+                  style={{
+                    marginTop: '22px', background: C.blue, color: 'white',
+                    border: 'none', borderRadius: '4px', padding: '11px 28px',
+                    fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+                    fontFamily: sans,
+                  }}
+                >
+                  Schließen
+                </button>
+              </div>
+            ) : (
+              /* ── Formular ── */
+              <>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={labelStyle}>WAS WAR HILFREICH?</label>
+                  <textarea
+                    value={hilfreich}
+                    onChange={(e) => setHilfreich(e.target.value)}
+                    placeholder="Was hat dir gut gefallen oder geholfen?"
+                    rows={3}
+                    style={{ ...inputStyle, resize: 'vertical' }}
+                    onFocus={(e) => { e.target.style.borderColor = C.teal; }}
+                    onBlur={(e) => { e.target.style.borderColor = C.border; }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={labelStyle}>WAS FEHLT?</label>
+                  <textarea
+                    value={fehlt}
+                    onChange={(e) => setFehlt(e.target.value)}
+                    placeholder="Was vermisst du? Was sollte noch ergänzt werden?"
+                    rows={3}
+                    style={{ ...inputStyle, resize: 'vertical' }}
+                    onFocus={(e) => { e.target.style.borderColor = C.teal; }}
+                    onBlur={(e) => { e.target.style.borderColor = C.border; }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={labelStyle}>WAS NERVT?</label>
+                  <textarea
+                    value={nervt}
+                    onChange={(e) => setNervt(e.target.value)}
+                    placeholder="Was stört dich? Was würdest du anders machen?"
+                    rows={3}
+                    style={{ ...inputStyle, resize: 'vertical' }}
+                    onFocus={(e) => { e.target.style.borderColor = C.teal; }}
+                    onBlur={(e) => { e.target.style.borderColor = C.border; }}
+                  />
+                </div>
+
+                {/* Sterne-Bewertung */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={labelStyle}>GESAMTEINDRUCK</label>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setBewertung(star)}
+                        onMouseEnter={() => setHoverStar(star)}
+                        onMouseLeave={() => setHoverStar(0)}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          fontSize: '30px', padding: '2px', lineHeight: 1,
+                          color: star <= (hoverStar || bewertung) ? '#F59E0B' : C.border,
+                          transition: 'transform 0.1s, color 0.1s',
+                          transform: star <= (hoverStar || bewertung) ? 'scale(1.15)' : 'scale(1)',
+                        }}
+                        title={`${star} von 5 Sternen`}
+                      >★</button>
+                    ))}
+                  </div>
+                  {bewertung > 0 && (
+                    <div style={{ fontSize: '11px', color: C.gray, marginTop: '4px', fontFamily: sans }}>
+                      {['', 'Sehr schlecht', 'Eher schlecht', 'Mittelmäßig', 'Gut', 'Sehr gut'][bewertung]}
+                    </div>
+                  )}
+                </div>
+
+                {/* E-Mail */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={labelStyle}>
+                    E-MAIL FÜR RÜCKFRAGEN{' '}
+                    <span style={{ fontWeight: '400', color: C.gray, letterSpacing: 0, fontSize: '11px' }}>(optional)</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="deine@email.de"
+                    style={inputStyle}
+                    onFocus={(e) => { e.target.style.borderColor = C.teal; }}
+                    onBlur={(e) => { e.target.style.borderColor = C.border; }}
+                  />
+                </div>
+
+                {error && (
+                  <div style={{
+                    background: '#FEF3C7', borderLeft: `3px solid #F59E0B`,
+                    borderRadius: '2px', padding: '10px 12px',
+                    fontSize: '12px', color: '#78350F',
+                    marginBottom: '14px', fontFamily: sans, lineHeight: '1.5',
+                  }}>
+                    {error}
+                  </div>
+                )}
+
+                {/* Aktions-Buttons */}
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={handleClose}
+                    style={{
+                      background: 'transparent', border: `1px solid ${C.border}`,
+                      borderRadius: '4px', padding: '10px 18px',
+                      fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+                      fontFamily: sans, color: C.gray,
+                    }}
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    onClick={handleSend}
+                    disabled={sending}
+                    style={{
+                      background: sending ? C.gray : C.teal, color: 'white',
+                      border: 'none', borderRadius: '4px', padding: '10px 20px',
+                      fontSize: '14px', fontWeight: '600',
+                      cursor: sending ? 'default' : 'pointer',
+                      fontFamily: sans, transition: 'background 0.15s',
+                      opacity: sending ? 0.75 : 1,
+                    }}
+                  >
+                    {sending ? 'Senden …' : 'Feedback senden'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
