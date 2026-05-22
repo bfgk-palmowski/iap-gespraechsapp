@@ -692,9 +692,9 @@ export default function App() {
               onClick={() => window.dispatchEvent(new CustomEvent('openFeedback'))}
               style={{
                 background: 'transparent', border: 'none',
-                color: C.blue, fontSize: '10px', cursor: 'pointer',
-                padding: '4px 0', fontFamily: sans, marginTop: '2px',
-                display: 'inline-block',
+                color: C.blue, fontSize: '10px', fontWeight: '700',
+                cursor: 'pointer', padding: '4px 0', fontFamily: sans,
+                marginTop: '2px', display: 'inline-block',
               }}
             >📝 Feedback erwünscht – Hilf uns die App zu verbessern</button>
           </div>
@@ -2674,16 +2674,16 @@ function FeedbackWidget() {
         title="Feedback geben"
         style={{
           position: 'fixed', bottom: '20px', right: '20px',
-          width: '52px', height: '52px', borderRadius: '50%',
+          height: '44px', borderRadius: '22px', padding: '0 18px',
           background: C.teal, border: 'none', cursor: 'pointer',
-          fontSize: '22px', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', zIndex: 900,
+          fontSize: '14px', fontWeight: '700', color: 'white',
+          display: 'flex', alignItems: 'center', gap: '6px', zIndex: 900,
           boxShadow: '0 4px 14px rgba(45,184,197,0.45)',
           transition: 'transform 0.15s, box-shadow 0.15s',
-          fontFamily: sans,
+          fontFamily: sans, whiteSpace: 'nowrap',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.1)';
+          e.currentTarget.style.transform = 'scale(1.06)';
           e.currentTarget.style.boxShadow = '0 6px 20px rgba(45,184,197,0.6)';
         }}
         onMouseLeave={(e) => {
@@ -2691,7 +2691,7 @@ function FeedbackWidget() {
           e.currentTarget.style.boxShadow = '0 4px 14px rgba(45,184,197,0.45)';
         }}
       >
-        📝
+        📝 Feedback
       </button>
 
       {/* ── Modal-Overlay ── */}
