@@ -692,7 +692,7 @@ export default function App() {
               onClick={() => window.dispatchEvent(new CustomEvent('openFeedback'))}
               style={{
                 background: 'transparent', border: 'none',
-                color: C.teal, fontSize: '10px', cursor: 'pointer',
+                color: C.blue, fontSize: '10px', cursor: 'pointer',
                 padding: '4px 0', fontFamily: sans, marginTop: '2px',
                 display: 'inline-block',
               }}
